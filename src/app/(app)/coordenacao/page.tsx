@@ -21,8 +21,8 @@ export default async function CoordinationPage() {
   const pct = d.stats.students ? Math.round((d.stats.connected / d.stats.students) * 100) : 0;
   const tiles = [
     { icon: Users, label: "Alunos", value: d.stats.students, tint: "var(--accent)" },
-    { icon: ClipboardList, label: `Sondagens no ${d.term?.name ?? "bimestre"}`, value: d.stats.rounds, tint: "var(--writing)" },
-    { icon: HeartHandshake, label: "Famílias conectadas", value: `${pct}%`, tint: "var(--family)" },
+    { icon: ClipboardList, label: "Sondagens", value: d.stats.rounds, tint: "var(--writing)" },
+    { icon: HeartHandshake, label: "Famílias", value: `${pct}%`, tint: "var(--family)" },
   ];
   return (
     <Page title="Visão geral" titleTint eyebrow={ctx.school.name} subtitle="Para apoiar professores e alunos — não para comparar pessoas." width="wide">
