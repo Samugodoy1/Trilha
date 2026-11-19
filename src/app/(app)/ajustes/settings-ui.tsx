@@ -8,7 +8,7 @@ import { SegmentedControl, Select, TextField, Toggle } from "@/components/ui/fie
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
 import { revokeMembershipAction, saveOfficeHoursAction, setThemeAction, updateSchoolAction } from "@/server/actions/settings";
-import { logoutAction } from "@/server/actions/session";
+import { changePasswordAction, logoutAction } from "@/server/actions/session";
 
 export function ThemePicker({ value }: { value: "system" | "light" | "dark" }) {
   const [v, setV] = useState(value);
@@ -136,5 +136,34 @@ export function LogoutRow() {
       <LogOut aria-hidden className="size-[18px]" />
       Sair
     </button>
+  );
+}
+
+export function PasswordForm() {
+  const [current, setCurrent] = useState("");
+  const [next, setNext] = useState("");
+  const [pending, start] = useTransition();
+  const toast = useToast();
+  return (
+    <div className="space-y-3">
+      <TextField label="Senha atual" type="password" autoComplete="current-password" value={current} onChange={(e) => setCurrent(e.target.value)} />
+      <TextField label="Nova senha" type="password" autoComplete="new-password" value={next} onChange={(e) => setNext(e.target.value)} hint="Pelo menos 10 caracteres, com letras e números." />
+      <Button
+        variant="tinted"
+        loading={pending}
+        disabled={!current || !next}
+        onClick={() =>
+          start(async () => {
+            const res = await changePasswordAction({ current, next });
+            if (!res.ok) return toast({ title: res.error ?? "Erro", tone: "error" });
+            setCurrent("");
+            setNext("");
+            toast({ title: "Senha alterada", description: "Outras sessões abertas foram encerradas." });
+          })
+        }
+      >
+        Alterar senha
+      </Button>
+    </div>
   );
 }

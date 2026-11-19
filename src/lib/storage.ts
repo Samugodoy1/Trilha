@@ -5,16 +5,30 @@ import path from "node:path";
 /**
  * Armazenamento privado de arquivos. Nada aqui é público: os arquivos só são
  * servidos por /api/media/[id], depois da verificação de permissão.
- * Driver local (disco). Para produção, implemente a mesma interface com um
- * bucket privado (S3, R2, Vercel Blob privado) e URLs assinadas de curta duração.
+ *
+ * Drivers:
+ *  - "disk": pasta local (desenvolvimento).
+ *  - "db":   tabela file_objects no próprio Postgres (padrão na Vercel, cujo disco é efêmero).
+ * Para grandes volumes, implemente a mesma interface com um bucket privado e URLs assinadas.
  */
+function driver(): "disk" | "db" {
+  const d = process.env.STORAGE_DRIVER;
+  if (d === "disk" || d === "db") return d;
+  return process.env.VERCEL ? "db" : "disk";
+}
+
 function root() {
-  return process.env.STORAGE_DIR ?? (process.env.VERCEL ? "/tmp/trilha-uploads" : path.join(process.cwd(), ".data", "uploads"));
+  return process.env.STORAGE_DIR ?? path.join(process.cwd(), ".data", "uploads");
 }
 
 function safePath(key: string) {
   if (!/^[a-z0-9-]+\/[a-z0-9-]+\.[a-z0-9]+$/i.test(key)) throw new Error("Chave de arquivo inválida");
   return path.join(root(), key);
+}
+
+async function table() {
+  const { getDb, schema } = await import("../db");
+  return { db: await getDb(), t: schema.fileObjects };
 }
 
 export const ALLOWED_UPLOAD_TYPES: Record<string, string> = {
@@ -29,6 +43,12 @@ export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
 export async function putObject(schoolId: string, data: Buffer, ext: string): Promise<string> {
   const key = `${schoolId}/${randomUUID()}.${ext}`;
+  safePath(key);
+  if (driver() === "db") {
+    const { db, t } = await table();
+    await db.insert(t).values({ key, data });
+    return key;
+  }
   const file = safePath(key);
   await mkdir(path.dirname(file), { recursive: true });
   await writeFile(file, data);
@@ -37,6 +57,13 @@ export async function putObject(schoolId: string, data: Buffer, ext: string): Pr
 
 export async function getObject(key: string): Promise<Buffer | null> {
   try {
+    safePath(key);
+    if (driver() === "db") {
+      const { db, t } = await table();
+      const { eq } = await import("drizzle-orm");
+      const [row] = await db.select().from(t).where(eq(t.key, key));
+      return row ? Buffer.from(row.data) : null;
+    }
     return await readFile(safePath(key));
   } catch {
     return null;
@@ -44,6 +71,12 @@ export async function getObject(key: string): Promise<Buffer | null> {
 }
 
 export async function deleteObject(key: string): Promise<void> {
+  if (driver() === "db") {
+    const { db, t } = await table();
+    const { eq } = await import("drizzle-orm");
+    await db.delete(t).where(eq(t.key, key));
+    return;
+  }
   await unlink(safePath(key)).catch(() => undefined);
 }
 

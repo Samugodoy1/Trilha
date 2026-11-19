@@ -28,7 +28,16 @@ async function create(): Promise<DB> {
   if (process.env.DATABASE_URL) {
     const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 10 });
     db = drizzlePg(pool, { schema });
-    await migratePg(db, { migrationsFolder });
+    // Trava no Postgres: várias instâncias serverless podem iniciar ao mesmo tempo.
+    const client = await pool.connect();
+    try {
+      await client.query("select pg_advisory_lock(727274)");
+      await migratePg(drizzlePg(client, { schema }), { migrationsFolder });
+      await prepare(db, demo);
+    } finally {
+      await client.query("select pg_advisory_unlock(727274)").catch(() => undefined);
+      client.release();
+    }
   } else {
     const { PGlite } = await import("@electric-sql/pglite");
     const { drizzle } = await import("drizzle-orm/pglite");
@@ -39,8 +48,13 @@ async function create(): Promise<DB> {
     const lite = drizzle(client, { schema });
     await migrate(lite, { migrationsFolder });
     db = lite as unknown as DB;
+    await prepare(db, demo);
   }
 
+  return db;
+}
+
+async function prepare(db: DB, demo: boolean) {
   if (demo) {
     const [{ value }] = await db.select({ value: count() }).from(schema.schools);
     if (value === 0) {
@@ -48,7 +62,10 @@ async function create(): Promise<DB> {
       await seed(db);
     }
   }
-  return db;
+  if (process.env.TRILHA_BOOTSTRAP_USERS) {
+    const { ensureBootstrapUsers } = await import("./bootstrap");
+    await ensureBootstrapUsers(db, process.env.TRILHA_BOOTSTRAP_USERS);
+  }
 }
 
 export function getDb(): Promise<DB> {

@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, ne } from "drizzle-orm";
 import { z } from "zod";
 import { getDb, schema } from "@/db";
 import { verifyPassword, hashPassword } from "@/lib/password";
@@ -119,4 +119,19 @@ export async function signupAction(_: FormState, form: FormData): Promise<FormSt
     .returning();
   await createSession(user.id, null);
   redirect("/boas-vindas");
+}
+
+/** Troca de senha: exige a senha atual e encerra as outras sessões abertas. */
+export async function changePasswordAction(input: { current: string; next: string }): Promise<{ ok: boolean; error?: string }> {
+  const s = await getSession();
+  if (!s) redirect("/entrar");
+  const next = String(input.next ?? "");
+  if (next.length < 10 || !/[A-Za-z]/.test(next) || !/\d/.test(next)) return { ok: false, error: "Use pelo menos 10 caracteres, com letras e números." };
+  const db = await getDb();
+  const [user] = await db.select().from(schema.users).where(eq(schema.users.id, s.user.id));
+  if (!user || !(await verifyPassword(String(input.current ?? ""), user.passwordHash))) return { ok: false, error: "A senha atual não confere." };
+  await db.update(schema.users).set({ passwordHash: await hashPassword(next) }).where(eq(schema.users.id, s.user.id));
+  await db.delete(schema.sessions).where(and(eq(schema.sessions.userId, s.user.id), ne(schema.sessions.id, s.sessionId)));
+  await audit(s, "password.change", "user", s.user.id);
+  return { ok: true };
 }

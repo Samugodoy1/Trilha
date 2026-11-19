@@ -15,6 +15,13 @@
       "when": 1795047684561,
       "tag": "0001_search_fn",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795122565604,
+      "tag": "0002_file_objects",
+      "breakpoints": true
     }
   ]
 }

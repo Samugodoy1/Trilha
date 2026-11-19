@@ -1,5 +1,6 @@
 import { relations, sql } from "drizzle-orm";
 import {
+  customType,
   boolean,
   date,
   index,
@@ -729,3 +730,14 @@ export const enrollmentsRelations = relations(enrollments, ({ one }) => ({
 export type EntryKindValue = (typeof entryKindEnum.enumValues)[number];
 export type MediaOwnerValue = (typeof mediaOwnerEnum.enumValues)[number];
 export type PortfolioKindValue = (typeof portfolioKindEnum.enumValues)[number];
+
+/* ───────────────────────── Armazenamento de arquivos (privado) ───────────────────────── */
+
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => "bytea" });
+
+/** Conteúdo dos arquivos quando o driver "db" está ativo (ex.: Vercel, onde o disco é efêmero). */
+export const fileObjects = pgTable("file_objects", {
+  key: text("key").primaryKey(),
+  data: bytea("data").notNull(),
+  createdAt: createdAt(),
+});

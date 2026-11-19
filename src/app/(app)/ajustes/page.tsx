@@ -8,7 +8,7 @@ import { isStaff } from "@/server/access";
 import { Page } from "@/components/ui/page";
 import { Avatar } from "@/components/ui/avatar";
 import { ListRow, ListSection } from "@/components/ui/list";
-import { ThemePicker, OfficeHoursForm, SchoolForm, RevokeButton, LogoutRow } from "./settings-ui";
+import { ThemePicker, OfficeHoursForm, SchoolForm, RevokeButton, LogoutRow, PasswordForm } from "./settings-ui";
 import { roleLabel } from "@/lib/vocabulary";
 import { formatMessageStamp } from "@/lib/format";
 
@@ -96,6 +96,12 @@ export default async function SettingsPage() {
               ))}
             </ListSection>
           )}
+
+          <ListSection variant="inset" header={<span className="text-footnote font-normal text-label-2 uppercase">Senha</span>}>
+            <div className="p-4">
+              <PasswordForm />
+            </div>
+          </ListSection>
 
           <ListSection variant="inset">
             <LogoutRow />
