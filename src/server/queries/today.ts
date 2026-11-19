@@ -34,7 +34,7 @@ export async function getTeacherToday(ctx: SessionContext) {
     .where(and(eq(schema.conversations.teacherId, ctx.user.id), ne(schema.messages.senderId, ctx.user.id), isNull(schema.messages.readAt)))
     .groupBy(schema.conversations.id, schema.users.name, schema.conversations.subject);
   if (unread.length === 1)
-    items.push({ id: "msg", kind: "messages", title: `Recado de ${unread[0].guardian}`, detail: unread[0].subject, href: `/mensagens/${unread[0].convId}`, tint: "var(--messages)" });
+    items.push({ id: "msg", kind: "messages", title: `Responder ${unread[0].guardian.split(" ")[0]}`, detail: unread[0].subject, href: `/mensagens/${unread[0].convId}`, tint: "var(--messages)" });
   else if (unread.length > 1)
     items.push({ id: "msg", kind: "messages", title: `${unread.length} famílias aguardam resposta`, detail: unread.map((u) => u.guardian.split(" ")[0]).join(", "), href: "/mensagens", tint: "var(--messages)" });
 
@@ -53,7 +53,7 @@ export async function getTeacherToday(ctx: SessionContext) {
           items.push({
             id: `sond-${c.id}-${t.templateId}`,
             kind: "assessment",
-            title: `Sondagem de ${t.kind === "escrita" ? "escrita" : t.kind === "leitura" ? "leitura" : "matemática"}`,
+            title: `Lançar sondagem de ${t.kind === "escrita" ? "escrita" : t.kind === "leitura" ? "leitura" : "matemática"}`,
             detail: `${c.name} · ${term.name}`,
             status: "não registrada",
             href: `/sondagens/nova?turma=${c.id}&modelo=${t.templateId}`,
@@ -85,9 +85,9 @@ export async function getTeacherToday(ctx: SessionContext) {
         items.push({
           id: `week-${c.id}`,
           kind: "weekly",
-          title: p ? "Revisar e publicar a Nossa semana" : "Nossa semana ainda não foi publicada",
+          title: p ? "Revisar e publicar a Nossa semana" : "Publicar a Nossa semana",
           detail: `${c.name}`,
-          status: p ? "rascunho" : "não publicada",
+          status: p ? "rascunho" : "ainda não publicada",
           href: p ? `/semana/${p.id}` : `/semana/nova?turma=${c.id}`,
           tint: "var(--family)",
         });
@@ -102,7 +102,7 @@ export async function getTeacherToday(ctx: SessionContext) {
     .orderBy(desc(schema.journalEntries.updatedAt))
     .limit(3);
   for (const d of drafts)
-    items.push({ id: `draft-${d.id}`, kind: "draft", title: "Rascunho não concluído", detail: d.title || d.body.slice(0, 60) || "Sem texto", href: `/diario/${d.id}`, tint: "var(--label-2)" });
+    items.push({ id: `draft-${d.id}`, kind: "draft", title: "Continuar rascunho", detail: d.title || d.body.slice(0, 60) || "Sem texto", href: `/diario/${d.id}`, tint: "var(--label-2)" });
 
   // Contribuições das famílias ainda não vistas
   if (classIds.length) {
@@ -115,7 +115,7 @@ export async function getTeacherToday(ctx: SessionContext) {
       .where(and(inArray(schema.enrollments.classId, classIds), isNull(schema.familyContributions.seenAt)))
       .limit(3);
     for (const c of contrib)
-      items.push({ id: `contrib-${c.id}`, kind: "contribution", title: `${c.author.split(" ")[0]} compartilhou algo feito em casa`, detail: displayName(c), href: `/alunos/${c.studentId}#em-casa`, tint: "var(--achievement)" });
+      items.push({ id: `contrib-${c.id}`, kind: "contribution", title: `Ver o que ${c.author.split(" ")[0]} compartilhou`, detail: displayName(c), href: `/alunos/${c.studentId}#em-casa`, tint: "var(--attendance)" });
   }
 
   // Alunos para acompanhar (sinais nos registros, nunca rótulos)

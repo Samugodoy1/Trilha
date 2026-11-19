@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronRight, ClipboardList, Ellipsis, ListChecks, MessageCircle, UserRound, type LucideIcon } from "lucide-react";
+import { BookOpen, ChevronRight, ClipboardList, Ellipsis, HeartHandshake, ListChecks, MessageCircle, PencilLine, UserRound, type LucideIcon } from "lucide-react";
 import { requireRole } from "@/server/session";
 import { getTeacherToday, type TodayItem } from "@/server/queries/today";
 import { Page } from "@/components/ui/page";
@@ -12,6 +12,16 @@ import { cn } from "@/lib/cn";
 import { HojeCompose } from "./quick-actions";
 
 export const metadata: Metadata = { title: "Hoje" };
+
+const itemIcon: Record<TodayItem["kind"], LucideIcon> = {
+  messages: MessageCircle,
+  assessment: ClipboardList,
+  weekly: BookOpen,
+  draft: PencilLine,
+  contribution: HeartHandshake,
+  feedback: MessageCircle,
+  authorization: ListChecks,
+};
 
 const typeLabel: Record<TodayItem["kind"], string> = {
   messages: "Mensagens",
@@ -75,13 +85,23 @@ export default async function TodayPage() {
                 {d.items.map((item, i) => (
                   <li key={item.id}>
                     <Link href={item.href} className="group flex items-start gap-3.5 pl-4 outline-none hover:bg-fill/40 focus-visible:bg-fill md:pl-0 md:hover:bg-transparent">
-                      <span aria-hidden className="mt-[13px] size-[22px] shrink-0 rounded-full border-[1.5px] border-separator-strong transition-colors group-hover:border-accent" />
-                      <span className={cn("min-w-0 flex-1 py-[11px] pr-4", i < d.items.length - 1 && "shadow-[inset_0_-0.5px_0_var(--separator)]")}>
+                      {(() => {
+                        const Icon = itemIcon[item.kind];
+                        return (
+                          <span aria-hidden className="mt-[11px] flex size-[30px] shrink-0 items-center justify-center rounded-full text-white" style={{ background: item.tint }}>
+                            <Icon className="size-[16px]" strokeWidth={2.4} />
+                          </span>
+                        );
+                      })()}
+                      <span className={cn("flex min-w-0 flex-1 items-center gap-2 py-[11px] pr-4", i < d.items.length - 1 && "shadow-[inset_0_-0.5px_0_var(--separator)]")}>
+                        <span className="min-w-0 flex-1">
                         <span className="block text-body">{item.title}</span>
                         <span className="mt-0.5 block text-subhead text-label-2">
                           {item.detail}
                           {item.status && <span className="text-critical-ink"> – {item.status}</span>}
                         </span>
+                        </span>
+                        <ChevronRight aria-hidden className="size-[15px] shrink-0 text-label-3/70" strokeWidth={2.6} />
                       </span>
                     </Link>
                   </li>

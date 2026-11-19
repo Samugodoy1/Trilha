@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { SegmentedControl, Select, TextField, Toggle } from "@/components/ui/fields";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
-import { revokeMembershipAction, saveOfficeHoursAction, setThemeAction, updateSchoolAction } from "@/server/actions/settings";
+import { resetPasswordAction, revokeMembershipAction, saveOfficeHoursAction, setThemeAction, updateSchoolAction } from "@/server/actions/settings";
 import { changePasswordAction, logoutAction } from "@/server/actions/session";
 
 export function ThemePicker({ value }: { value: "system" | "light" | "dark" }) {
@@ -165,5 +165,38 @@ export function PasswordForm() {
         Alterar senha
       </Button>
     </div>
+  );
+}
+
+export function ResetPasswordButton({ id, name }: { id: string; name: string }) {
+  const [pending, start] = useTransition();
+  const [temp, setTemp] = useState<string | null>(null);
+  const toast = useToast();
+  if (temp)
+    return (
+      <span className="flex items-center gap-2">
+        <code className="rounded-[8px] bg-fill px-2 py-1 font-mono text-footnote select-all">{temp}</code>
+        <button type="button" className="text-footnote font-semibold text-accent" onClick={() => navigator.clipboard?.writeText(temp).then(() => toast({ title: "Senha copiada" }))}>
+          Copiar
+        </button>
+      </span>
+    );
+  return (
+    <button
+      type="button"
+      disabled={pending}
+      aria-label={`Redefinir a senha de ${name}`}
+      onClick={() =>
+        start(async () => {
+          const res = await resetPasswordAction(id);
+          if (!res.ok) return toast({ title: res.error, tone: "error" });
+          setTemp(res.password);
+          toast({ title: "Senha temporária criada", description: "Ela aparece só agora. Entregue pessoalmente e peça para trocar em Ajustes." });
+        })
+      }
+      className="rounded-full px-2.5 py-1 text-footnote font-semibold text-accent hover:bg-fill disabled:opacity-40"
+    >
+      Redefinir senha
+    </button>
   );
 }

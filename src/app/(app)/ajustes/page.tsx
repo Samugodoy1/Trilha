@@ -8,7 +8,7 @@ import { isStaff } from "@/server/access";
 import { Page } from "@/components/ui/page";
 import { Avatar } from "@/components/ui/avatar";
 import { ListRow, ListSection } from "@/components/ui/list";
-import { ThemePicker, OfficeHoursForm, SchoolForm, RevokeButton, LogoutRow, PasswordForm } from "./settings-ui";
+import { ThemePicker, OfficeHoursForm, SchoolForm, RevokeButton, LogoutRow, PasswordForm, ResetPasswordButton } from "./settings-ui";
 import { roleLabel } from "@/lib/vocabulary";
 import { formatMessageStamp } from "@/lib/format";
 
@@ -83,7 +83,7 @@ export default async function SettingsPage() {
               </ListSection>
               <ListSection variant="inset" header={<span className="text-footnote font-normal text-label-2 uppercase">Pessoas com acesso</span>}>
                 {members.map((m) => (
-                  <ListRow key={m.id} leading={<Avatar name={m.name} hue={m.hue} size="sm" />} title={m.name} subtitle={roleLabel[m.role]} trailing={m.userId !== ctx.user.id ? <RevokeButton id={m.id} /> : undefined} />
+                  <ListRow key={m.id} leading={<Avatar name={m.name} hue={m.hue} size="sm" />} title={m.name} subtitle={roleLabel[m.role]} trailing={m.userId !== ctx.user.id ? <span className="flex items-center gap-1"><ResetPasswordButton id={m.id} name={m.name} /><RevokeButton id={m.id} /></span> : undefined} />
                 ))}
               </ListSection>
             </>

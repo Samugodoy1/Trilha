@@ -64,7 +64,7 @@ export function StudentTabs({ value, options }: { value: string; options: { valu
             role="tab"
             aria-selected={on}
             onClick={() => go(o.value)}
-            className={cn("press h-9 shrink-0 rounded-full px-4 text-subhead font-semibold transition-colors", on ? "bg-label text-canvas" : "bg-fill text-label hover:bg-fill-2")}
+            className={cn("press h-10 shrink-0 rounded-full px-4 text-subhead font-semibold transition-colors", on ? "bg-label text-canvas" : "bg-fill text-label hover:bg-fill-2")}
           >
             {o.label}
           </button>

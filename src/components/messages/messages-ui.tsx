@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Archive, ArrowUp, ChevronLeft, Clock, Inbox } from "lucide-react";
+import { Archive, ArrowUp, ChevronLeft, Clock, Ellipsis, Inbox } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Menu } from "@/components/ui/menu";
 import { useToast } from "@/components/ui/toast";
@@ -153,8 +153,8 @@ export function Thread({
               ]}
             >
               {(p) => (
-                <button type="button" {...p} aria-label="Opções da conversa" className="flex size-8 items-center justify-center rounded-full text-accent hover:bg-fill">
-                  <Archive className="size-[18px]" />
+                <button type="button" {...p} aria-label="Opções da conversa" className="flex size-8 items-center justify-center rounded-full bg-fill text-accent hover:bg-fill-2">
+                  <Ellipsis className="size-[18px]" strokeWidth={2.4} />
                 </button>
               )}
             </Menu>

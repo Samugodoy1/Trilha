@@ -57,6 +57,9 @@ export function LoginForm({ next }: { next?: string }) {
           Entrar
         </Button>
         <div className="flex flex-col items-center gap-2 pt-2 text-subhead">
+          <Link href="/entrar/recuperar" className="font-medium text-accent hover:underline">
+            Esqueci minha senha
+          </Link>
           <Link href="/convite" className="font-medium text-accent hover:underline">
             Recebi um convite da escola
           </Link>
