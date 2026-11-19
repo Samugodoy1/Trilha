@@ -28,7 +28,7 @@ function safePath(key: string) {
 
 async function table() {
   const { getDb, schema } = await import("../db");
-  return { db: await getDb(), t: schema.fileObjects };
+  return { db: globalThis.__trilhaDbReady ?? (await getDb()), t: schema.fileObjects };
 }
 
 export const ALLOWED_UPLOAD_TYPES: Record<string, string> = {

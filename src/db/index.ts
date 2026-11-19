@@ -11,6 +11,9 @@ export { schema };
 declare global {
   // eslint-disable-next-line no-var
   var __trilhaDb: Promise<DB> | undefined;
+  // Conexão já aberta, disponível durante a preparação (antes de getDb() resolver)
+  // eslint-disable-next-line no-var
+  var __trilhaDbReady: DB | undefined;
 }
 
 const migrationsFolder = path.join(process.cwd(), "drizzle");
@@ -55,11 +58,15 @@ async function create(): Promise<DB> {
 }
 
 async function prepare(db: DB, demo: boolean) {
+  globalThis.__trilhaDbReady = db;
   if (demo) {
     const [{ value }] = await db.select({ value: count() }).from(schema.schools);
     if (value === 0) {
       const { seed } = await import("./seed");
-      await seed(db);
+      // Tudo ou nada: uma falha no meio não deixa o banco populado pela metade.
+      await db.transaction(async (tx) => {
+        await seed(tx as unknown as DB);
+      });
     }
   }
   if (process.env.TRILHA_BOOTSTRAP_USERS) {
