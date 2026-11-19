@@ -29,11 +29,12 @@ async function create(): Promise<DB> {
   const demo = process.env.TRILHA_DEMO === "true" || !process.env.DATABASE_URL;
 
   if (process.env.DATABASE_URL) {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 10 });
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 5, idleTimeoutMillis: 10_000 });
     db = drizzlePg(pool, { schema });
     // Trava no Postgres: várias instâncias serverless podem iniciar ao mesmo tempo.
     const client = await pool.connect();
     try {
+      await client.query("set lock_timeout = '30s'");
       await client.query("select pg_advisory_lock(727274)");
       await migratePg(drizzlePg(client, { schema }), { migrationsFolder });
       await prepare(db, demo);
