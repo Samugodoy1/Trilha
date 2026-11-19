@@ -3,7 +3,7 @@
  * - Somente arquivos estáticos e públicos são guardados em cache.
  * - Páginas e /api (dados pessoais) nunca são cacheadas; sem rede, mostra-se uma página offline genérica.
  */
-const VERSION = "trilha-v1";
+const VERSION = "trilha-v2";
 const STATIC = ["/offline.html", "/icons/icon.svg", "/icons/icon-192.png", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {

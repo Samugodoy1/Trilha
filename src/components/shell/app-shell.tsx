@@ -62,7 +62,8 @@ export function AppShell(props: ShellProps) {
 
   const tabItems = tabs.map((h) => nav.find((n) => n.href === h)!).filter(Boolean);
   // Telefone: até 4 abas + "Mais" com o restante
-  const phoneTabs = nav.length > 5 ? tabItems.slice(0, 4) : tabItems;
+  // Telefone: 4 abas + "Mais" (sempre presente: dá acesso a Ajustes, troca de perfil e Sair)
+  const phoneTabs = tabItems.slice(0, 4);
   const overflow = nav.filter((n) => !phoneTabs.includes(n));
 
   return (
@@ -269,7 +270,7 @@ export function AppShell(props: ShellProps) {
               </Link>
             );
           })}
-          {overflow.length > 0 && (
+          {(
             <button
               type="button"
               onClick={() => setMoreOpen(true)}
@@ -325,6 +326,7 @@ export function AppShell(props: ShellProps) {
         <div className="mt-4">
           <AccountMenu user={user} school={school} memberships={memberships} variant={variant} />
         </div>
+        <LogoutButton />
       </Sheet>
 
       {variant === "teacher" && <QuickRecord open={composeOpen} onClose={() => setComposeOpen(false)} />}
@@ -423,3 +425,18 @@ export function ChildSwitcher({ family }: { family: NonNullable<ShellProps["fami
   );
 }
 
+
+function LogoutButton() {
+  const [pending, start] = useTransition();
+  return (
+    <button
+      type="button"
+      disabled={pending}
+      onClick={() => start(() => logoutAction())}
+      className="mt-4 flex w-full items-center justify-center gap-2 rounded-[12px] bg-surface py-3 text-body text-critical-ink disabled:opacity-50"
+    >
+      <LogOut aria-hidden className="size-[18px]" />
+      Sair
+    </button>
+  );
+}
