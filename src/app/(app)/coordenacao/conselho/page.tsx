@@ -31,7 +31,7 @@ export default async function CouncilPage({ searchParams }: { searchParams: Prom
       <div className="mb-6">
         <StudentTabs value={selected.id} options={classes.map((c) => ({ value: c.id, label: c.name }))} />
       </div>
-      <div className="-mx-4 overflow-x-auto md:mx-0">
+      <div className="-mx-5 overflow-x-auto md:mx-0">
         <table className="w-full min-w-[720px] text-left">
           <thead>
             <tr className="text-footnote text-label-2">
@@ -50,14 +50,14 @@ export default async function CouncilPage({ searchParams }: { searchParams: Prom
               const rep = reports.find((r) => r.studentId === s.id);
               return (
                 <tr key={s.id} className="shadow-[inset_0_0.5px_0_var(--separator)]">
-                  <td className="px-4 py-2.5 md:pl-0">
+                  <td className="px-5 py-2.5 md:pl-0">
                     <Link href={`/alunos/${s.id}`} className="text-body hover:text-accent">
                       {s.name}
                     </Link>
                   </td>
                   <td className="px-3 py-2.5 text-subhead">{s.writing ?? "—"}</td>
                   <td className="px-3 py-2.5 text-subhead">{s.reading ?? "—"}</td>
-                  <td className={`px-3 py-2.5 text-subhead tabular ${rate !== null && rate < 85 ? "font-semibold text-critical" : ""}`}>{rate !== null ? `${rate}%` : "—"}</td>
+                  <td className={`px-3 py-2.5 text-subhead tabular ${rate !== null && rate < 85 ? "font-semibold text-critical-ink" : ""}`}>{rate !== null ? `${rate}%` : "—"}</td>
                   <td className="px-3 py-2.5 text-subhead tabular">{s.entryCount}</td>
                   <td className="px-3 py-2.5 text-subhead">
                     {rep ? (

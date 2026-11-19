@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight, TrendingUp } from "lucide-react";
-import { categoryColor, VisibilityBadge } from "@/components/ui/misc";
+import { categoryColor, categoryInk, VisibilityBadge } from "@/components/ui/misc";
 import { formatDay, formatMonth, parseISODate } from "@/lib/format";
 import type { TimelineEvent } from "@/server/queries/student";
 
@@ -25,7 +25,7 @@ export function Timeline({ events, showVisibility = true }: { events: TimelineEv
     <div className="space-y-8">
       {groups.map((g) => (
         <section key={g.key} aria-label={g.label}>
-          <h3 className="sticky top-[calc(env(safe-area-inset-top)+52px)] z-10 -mx-1 mb-3 px-1 py-1 font-sans text-headline md:top-[52px]">
+          <h3 className="sticky top-[calc(env(safe-area-inset-top)+44px)] z-10 -mx-1 mb-3 px-1 py-1 font-sans text-headline md:top-14">
             <span className="rounded-full bg-canvas/85 py-1 pr-3 backdrop-blur">{g.label}</span>
           </h3>
           <ol className="relative space-y-3 pl-6 before:absolute before:top-2 before:bottom-2 before:left-[7px] before:w-[2px] before:rounded-full before:bg-separator">
@@ -34,7 +34,7 @@ export function Timeline({ events, showVisibility = true }: { events: TimelineEv
               const content = (
                 <>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-footnote font-semibold" style={{ color }}>
+                    <span className="text-footnote font-semibold" style={{ color: categoryInk[e.category] }}>
                       {e.label}
                     </span>
                     <time dateTime={e.date} className="shrink-0 text-footnote text-label-2">
@@ -45,7 +45,7 @@ export function Timeline({ events, showVisibility = true }: { events: TimelineEv
                     {e.delta !== undefined && e.delta > 0 && <TrendingUp aria-label="Avanço" className="size-4 shrink-0 text-positive-ink" strokeWidth={2.4} />}
                     {e.title}
                   </p>
-                  {e.body && <p className="mt-1 text-subhead whitespace-pre-line text-label-2">{e.body}</p>}
+                  {e.body && <p className="mt-1 text-callout leading-snug whitespace-pre-line">{e.body}</p>}
                   {e.mediaId && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={`/api/media/${e.mediaId}`} alt={e.title} loading="lazy" className="mt-3 aspect-[4/3] w-full max-w-sm rounded-[12px] object-cover" />

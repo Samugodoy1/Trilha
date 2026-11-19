@@ -156,7 +156,7 @@ export default async function StudentPage({ params, searchParams }: { params: Pr
                 <div className="rounded-xl bg-surface p-4 shadow-e1">
                   <LevelChart data={seriesChartData(s)} levels={s.scale.map((l) => ({ short: l.short, label: l.label }))} color={categoryColor[meta.category]} height={190} title={`Evolução em ${s.name}`} />
                 </div>
-                <div className="-mx-4 mt-3 md:mx-0" role="list">
+                <div className="-mx-5 mt-3 md:mx-0" role="list">
                   {[...s.points].reverse().map((pt) => (
                     <ListRow
                       key={pt.roundId}

@@ -55,7 +55,7 @@ export function ListSection({
 
 export function List({ children, className, variant = "plain" }: { children: React.ReactNode; className?: string; variant?: "plain" | "inset" }) {
   return (
-    <div role="list" data-variant={variant} className={cn("group/list", variant === "inset" ? "overflow-hidden rounded-[12px] bg-surface" : "-mx-4 md:mx-0", className)}>
+    <div role="list" data-variant={variant} className={cn("group/list", variant === "inset" ? "overflow-hidden rounded-[12px] bg-surface" : "-mx-5 [--row-pl:1.25rem] md:mx-0 md:[--row-pl:0px]", className)}>
       {children}
     </div>
   );
@@ -117,7 +117,7 @@ export function ListRow({
             className={cn(
               "block text-body",
               !multiline && "truncate",
-              destructive ? "text-critical" : interactive && !href && !chevron ? "text-accent" : "text-label",
+              destructive ? "text-critical-ink" : interactive && !href && !chevron ? "text-accent" : "text-label",
             )}
           >
             {title}
@@ -131,7 +131,7 @@ export function ListRow({
     </>
   );
   const cls = cn(
-    "flex w-full items-center gap-3.5 pl-4 text-left outline-none transition-colors duration-150",
+    "flex w-full items-center gap-3.5 pl-[var(--row-pl,1rem)] text-left outline-none transition-colors duration-150",
     interactive && "hover:bg-fill/50 active:bg-fill focus-visible:bg-fill",
     className,
   );

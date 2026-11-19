@@ -122,7 +122,7 @@ export function RevokeButton({ id }: { id: string }) {
       type="button"
       disabled={pending}
       onClick={() => start(async () => (await revokeMembershipAction(id), router.refresh()))}
-      className="rounded-full px-2.5 py-1 text-footnote font-semibold text-critical hover:bg-fill disabled:opacity-40"
+      className="rounded-full px-2.5 py-1 text-footnote font-semibold text-critical-ink hover:bg-fill disabled:opacity-40"
     >
       Revogar
     </button>
@@ -132,7 +132,7 @@ export function RevokeButton({ id }: { id: string }) {
 export function LogoutRow() {
   const [pending, start] = useTransition();
   return (
-    <button type="button" disabled={pending} onClick={() => start(() => logoutAction())} className="flex w-full items-center justify-center gap-2 py-3 text-body text-critical">
+    <button type="button" disabled={pending} onClick={() => start(() => logoutAction())} className="flex w-full items-center justify-center gap-2 py-3 text-body text-critical-ink">
       <LogOut aria-hidden className="size-[18px]" />
       Sair
     </button>

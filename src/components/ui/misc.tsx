@@ -35,6 +35,24 @@ export const categoryColor = {
 } as const;
 export type Category = keyof typeof categoryColor;
 
+/** Mesma família de cores, em versões com contraste suficiente para texto pequeno. */
+export const categoryInk: Record<Category, string> = {
+  reading: "var(--reading-ink)",
+  writing: "var(--writing-ink)",
+  math: "var(--math-ink)",
+  notes: "var(--notes-ink)",
+  attendance: "var(--positive-ink)",
+  achievement: "var(--achievement-ink)",
+  family: "var(--family-ink)",
+  messages: "var(--accent)",
+  accent: "var(--accent)",
+  diagnostic: "var(--accent)",
+  skills: "var(--notes-ink)",
+  custom: "var(--label-2)",
+  warning: "var(--warning-ink)",
+  critical: "var(--critical-ink)",
+};
+
 /** Rótulo de categoria (ícone + nome na cor da categoria). */
 export function CategoryLabel({
   icon: Icon,
@@ -48,8 +66,8 @@ export function CategoryLabel({
   className?: string;
 }) {
   return (
-    <span className={cn("inline-flex items-center gap-1.5 text-subhead font-semibold", className)} style={{ color: categoryColor[category] }}>
-      <Icon aria-hidden className="size-[15px]" strokeWidth={2.4} />
+    <span className={cn("inline-flex items-center gap-1.5 text-subhead font-semibold", className)} style={{ color: categoryInk[category] }}>
+      <Icon aria-hidden className="size-[15px]" strokeWidth={2.4} style={{ color: categoryColor[category] }} />
       {children}
     </span>
   );
@@ -102,7 +120,7 @@ export function VisibilityBadge({ visibility, className }: { visibility: Visibil
   const info = visibilityInfo[visibility];
   return (
     <span
-      className={cn("inline-flex items-center gap-1 text-footnote text-label-2", visibility === "family" && "text-family", className)}
+      className={cn("inline-flex items-center gap-1 text-footnote text-label-2", visibility === "family" && "text-family-ink", className)}
       title={info.description}
     >
       <Icon aria-hidden className="size-3.5" strokeWidth={2.3} />

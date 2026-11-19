@@ -9,7 +9,7 @@ import { entryKinds, visibilityInfo, type EntryKind, type Visibility } from "@/l
 
 export function KindPicker({ value, onChange }: { value: EntryKind; onChange: (k: EntryKind) => void }) {
   return (
-    <div role="radiogroup" aria-label="Tipo de registro" className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+    <div role="radiogroup" aria-label="Tipo de registro" className="scrollbar-none -mx-5 flex gap-2 overflow-x-auto px-5 pb-1">
       {(Object.keys(entryKinds) as EntryKind[]).map((k) => {
         const active = k === value;
         return (

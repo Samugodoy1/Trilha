@@ -83,7 +83,7 @@ export function GradeEntry({
       </div>
       <p className="px-1 text-footnote text-label-2">A média da turma é só para você. Famílias veem apenas o resultado do próprio filho — nunca rankings ou comparações.</p>
 
-      <div className="-mx-4 md:mx-0">
+      <div className="-mx-5 md:mx-0">
         {students.map((s, i) => {
           const g = grades[s.id] ?? { score: null, concept: null, comment: null };
           return (

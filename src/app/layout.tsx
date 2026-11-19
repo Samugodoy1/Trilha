@@ -22,15 +22,21 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f5f5f2" },
-    { media: "(prefers-color-scheme: dark)", color: "#0c0c0d" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
   ],
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const theme = (await cookies()).get("trilha_theme")?.value;
+  const fixed = theme === "light" ? "#ffffff" : theme === "dark" ? "#000000" : null;
   return (
     <html lang="pt-BR" data-theme={theme === "light" || theme === "dark" ? theme : undefined} suppressHydrationWarning>
+      {fixed && (
+        <head>
+          <meta name="theme-color" content={fixed} />
+        </head>
+      )}
       <body>
         <Providers>{children}</Providers>
       </body>

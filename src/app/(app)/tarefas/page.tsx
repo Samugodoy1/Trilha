@@ -48,7 +48,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
     total: sizes.find((s) => s.classId === t.classId)?.n ?? 0,
   }));
   return (
-    <Page title="Tarefas" titleTint subtitle="Publicadas aqui, aparecem na agenda de cada família." width="default">
+    <Page title="Tarefas" titleTint width="default">
       <TasksView
         upcoming={rows.filter((r) => !r.dueOn || r.dueOn >= today)}
         past={rows.filter((r) => r.dueOn && r.dueOn < today).reverse()}

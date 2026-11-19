@@ -38,7 +38,7 @@ export default async function AgendaPage() {
     if (i.type === "task") {
       const t = i.data;
       return (
-        <li key={`t-${t.id}`} className="flex items-start gap-3.5 pl-4 md:pl-0">
+        <li key={`t-${t.id}`} className="flex items-start gap-3.5 pl-5 md:pl-0">
           <span className="mt-[12px]">
             <TaskCheck taskId={t.id} studentId={child.id} done={Boolean(t.completion)} title={t.title} acceptsSubmissions={t.acceptsSubmissions} />
           </span>
@@ -69,9 +69,9 @@ export default async function AgendaPage() {
     }
     const x = i.data;
     return (
-      <li key={`a-${x.id}`} className={cn("mx-4 my-2 md:mx-0", x.important ? "rounded-[18px] bg-[color-mix(in_oklab,var(--critical)_7%,var(--surface))] p-4" : "py-1")}>
+      <li key={`a-${x.id}`} className={cn("mx-5 my-2 md:mx-0", x.important ? "rounded-[18px] bg-[color-mix(in_oklab,var(--critical)_7%,var(--surface))] p-4" : "py-1")}>
         <div className="flex items-center gap-2">
-          <span className={cn("text-footnote font-semibold", x.important ? "text-critical" : "text-label-2")}>{announcementKinds[x.kind]}</span>
+          <span className={cn("text-footnote font-semibold", x.important ? "text-critical-ink" : "text-label-2")}>{announcementKinds[x.kind]}</span>
           {x.important && <Tag tone="critical">Importante</Tag>}
           {!x.response && <span aria-label="Novo" className="size-2 rounded-full bg-accent" />}
         </div>
@@ -107,12 +107,18 @@ export default async function AgendaPage() {
     <Page title="Agenda" titleTint subtitle={`Tarefas, recados e eventos de ${child.firstName}.`} width="narrow">
       <MarkAnnouncementsRead studentId={child.id} ids={unreadIds} />
       {upcoming.length === 0 && <p className="text-callout text-label-2">Nada programado por enquanto.</p>}
-      <div className="-mx-4 md:mx-0">
+      <div className="-mx-5 md:mx-0">
         {group(upcoming).map(([date, list]) => (
           <section key={date} aria-label={formatFullDay(date)} className="pb-2">
-            <h2 className="px-4 pt-4 pb-1 font-sans text-subhead font-semibold text-label-2 shadow-[inset_0_0.5px_0_var(--separator)] md:px-0">
-              <span className={date === today ? "text-critical" : ""}>{formatRelativeDay(date)}</span>
-              {formatRelativeDay(date) !== formatFullDay(date) && <span className="font-normal"> · {formatFullDay(date)}</span>}
+            <h2 className="px-5 pt-4 pb-1 font-sans text-subhead font-semibold text-label-2 shadow-[inset_0_0.5px_0_var(--separator)] md:px-0">
+              {["Hoje", "Amanhã"].includes(formatRelativeDay(date)) ? (
+                <>
+                  <span className={date === today ? "text-critical-ink" : ""}>{formatRelativeDay(date)}</span>
+                  <span className="font-normal"> · {formatFullDay(date)}</span>
+                </>
+              ) : (
+                formatFullDay(date)
+              )}
             </h2>
             <ul>{list.map((i, k) => renderItem(i, k === list.length - 1))}</ul>
           </section>
@@ -121,7 +127,7 @@ export default async function AgendaPage() {
       {past.length > 0 && (
         <details className="mt-8">
           <summary className="cursor-pointer text-callout font-medium text-accent">Ver anteriores</summary>
-          <ul className="-mx-4 mt-2 md:mx-0">{past.map((i, k) => renderItem(i, k === past.length - 1))}</ul>
+          <ul className="-mx-5 mt-2 md:mx-0">{past.map((i, k) => renderItem(i, k === past.length - 1))}</ul>
         </details>
       )}
     </Page>

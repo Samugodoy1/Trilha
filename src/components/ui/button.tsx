@@ -15,7 +15,7 @@ const variants: Record<Variant, string> = {
   tinted: "bg-accent-soft text-accent hover:bg-[color-mix(in_oklab,var(--accent)_18%,transparent)]",
   gray: "bg-fill text-label hover:bg-fill-2",
   plain: "text-accent hover:bg-accent-soft",
-  destructive: "bg-[color-mix(in_oklab,var(--critical)_12%,transparent)] text-critical hover:bg-[color-mix(in_oklab,var(--critical)_18%,transparent)]",
+  destructive: "bg-[color-mix(in_oklab,var(--critical)_12%,transparent)] text-critical-ink hover:bg-[color-mix(in_oklab,var(--critical)_18%,transparent)]",
   glass: "glass text-label",
 };
 

@@ -24,7 +24,7 @@ export default async function ParticipatePage() {
           <div className="space-y-3">
             {ideas.map((i) => (
               <article key={i.id} className="rounded-[20px] bg-[color-mix(in_oklab,var(--family)_7%,var(--surface))] p-4">
-                <p className="flex items-center gap-1.5 text-footnote font-semibold text-family">
+                <p className="flex items-center gap-1.5 text-footnote font-semibold text-family-ink">
                   <House aria-hidden className="size-3.5" /> Semana de {formatDay(i.date)}
                 </p>
                 <p className="mt-1 text-body">{i.body}</p>
@@ -43,9 +43,9 @@ export default async function ParticipatePage() {
       {own.length > 0 && (
         <section aria-labelledby="enviados">
           <SectionTitle id="enviados">Compartilhados</SectionTitle>
-          <ul className="-mx-4 md:mx-0">
+          <ul className="-mx-5 md:mx-0">
             {own.map((c, i) => (
-              <li key={c.id} className={`px-4 py-3 md:px-0 ${i < own.length - 1 ? "shadow-[inset_0_-0.5px_0_var(--separator)]" : ""}`}>
+              <li key={c.id} className={`px-5 py-3 md:px-0 ${i < own.length - 1 ? "shadow-[inset_0_-0.5px_0_var(--separator)]" : ""}`}>
                 <p className="text-footnote font-semibold text-label-2">
                   {contributionKinds[c.kind]} · {formatDay(isoFromTimestamp(c.createdAt))}
                   {c.seenAt && <span className="text-positive-ink"> · vista pela professora</span>}

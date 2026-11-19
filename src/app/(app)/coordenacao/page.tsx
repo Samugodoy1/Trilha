@@ -80,7 +80,7 @@ export default async function CoordinationPage() {
             {d.support.length === 0 ? (
               <p className="text-callout text-label-2">Nenhum sinal de alerta nas últimas duas semanas.</p>
             ) : (
-              <ul className="-mx-4 md:mx-0">
+              <ul className="-mx-5 md:mx-0">
                 {d.support.map((s, i) => (
                   <li key={s.id}>
                     <Link href={`/alunos/${s.id}`} className="flex items-center gap-3 pl-4 hover:bg-fill/40 md:pl-0">
@@ -88,7 +88,7 @@ export default async function CoordinationPage() {
                       <span className={cn("flex-1 py-2.5 pr-4", i < d.support.length - 1 && "shadow-[inset_0_-0.5px_0_var(--separator)]")}>
                         <span className="block text-body">{s.name}</span>
                         <span className="block text-subhead text-label-2">
-                          {s.className} – <span className="text-critical">{s.reason}</span>
+                          {s.className} – <span className="text-critical-ink">{s.reason}</span>
                         </span>
                       </span>
                     </Link>
@@ -103,11 +103,11 @@ export default async function CoordinationPage() {
               {d.shared.map(({ e, author, className }) => (
                 <li key={e.id}>
                   <Link href={`/diario/${e.id}`} className="block rounded-[20px] bg-surface p-4 shadow-e1 hover:shadow-e2">
-                    <p className="text-footnote font-semibold text-notes">
+                    <p className="text-footnote font-semibold text-notes-ink">
                       {entryKinds[e.kind].label} · {className}
                     </p>
                     <p className="mt-0.5 text-headline">{e.title}</p>
-                    <p className="mt-1 line-clamp-3 text-subhead text-label-2">{e.body}</p>
+                    <p className="mt-1 line-clamp-3 text-callout leading-snug">{e.body}</p>
                     <p className="mt-2 text-footnote text-label-2">
                       {author} · {formatDay(e.occurredOn)}
                     </p>

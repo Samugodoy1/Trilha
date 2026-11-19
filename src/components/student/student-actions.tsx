@@ -54,7 +54,7 @@ export function StudentTabs({ value, options }: { value: string; options: { valu
       router.replace(`${pathname}${p.size ? `?${p}` : ""}`, { scroll: false });
     });
   return (
-    <div role="tablist" aria-label="Seções" className={cn("scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:px-0", pending && "opacity-70")}>
+    <div role="tablist" aria-label="Seções" className={cn("scrollbar-none -mx-5 flex gap-2 overflow-x-auto px-5 md:mx-0 md:px-0", pending && "opacity-70")}>
       {options.map((o) => {
         const on = o.value === value;
         return (

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { MotionConfig } from "motion/react";
 import { ToastProvider } from "@/components/ui/toast";
+import { ThemeColorSync } from "@/components/theme-color";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -12,7 +13,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }, []);
   return (
     <MotionConfig reducedMotion="user">
-      <ToastProvider>{children}</ToastProvider>
+      <ToastProvider>
+        <ThemeColorSync />
+        {children}
+      </ToastProvider>
     </MotionConfig>
   );
 }

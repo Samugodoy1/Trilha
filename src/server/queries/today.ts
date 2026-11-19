@@ -53,8 +53,8 @@ export async function getTeacherToday(ctx: SessionContext) {
           items.push({
             id: `sond-${c.id}-${t.templateId}`,
             kind: "assessment",
-            title: `Sondagem de ${t.kind === "escrita" ? "escrita" : t.kind === "leitura" ? "leitura" : "matemática"} do ${term.name}`,
-            detail: `${c.name} · ${t.tplName}`,
+            title: `Sondagem de ${t.kind === "escrita" ? "escrita" : t.kind === "leitura" ? "leitura" : "matemática"}`,
+            detail: `${c.name} · ${term.name}`,
             status: "não registrada",
             href: `/sondagens/nova?turma=${c.id}&modelo=${t.templateId}`,
             tint: t.kind === "escrita" ? "var(--writing)" : t.kind === "leitura" ? "var(--reading)" : "var(--math)",
@@ -143,7 +143,7 @@ export async function getTeacherToday(ctx: SessionContext) {
       .groupBy(schema.journalEntryStudents.studentId);
     // Sondagens sem mudança de nível nas duas últimas rodadas do mesmo modelo
     const results = await db
-      .select({ studentId: schema.assessmentResults.studentId, level: schema.assessmentResults.levelKey, templateId: schema.assessmentRounds.templateId, tplName: schema.assessmentTemplates.name, on: schema.assessmentRounds.appliedOn, scale: schema.assessmentTemplates.scale })
+      .select({ studentId: schema.assessmentResults.studentId, level: schema.assessmentResults.levelKey, templateId: schema.assessmentRounds.templateId, tplName: schema.assessmentTemplates.name, kind: schema.assessmentTemplates.kind, on: schema.assessmentRounds.appliedOn, scale: schema.assessmentTemplates.scale })
       .from(schema.assessmentResults)
       .innerJoin(schema.assessmentRounds, eq(schema.assessmentRounds.id, schema.assessmentResults.roundId))
       .innerJoin(schema.assessmentTemplates, eq(schema.assessmentTemplates.id, schema.assessmentRounds.templateId))
@@ -153,7 +153,7 @@ export async function getTeacherToday(ctx: SessionContext) {
     for (const s of studs) {
       const reasons: string[] = [];
       const abs = absences.find((a) => a.studentId === s.id)?.n ?? 0;
-      if (abs >= 3) reasons.push(`${abs} faltas nas últimas duas semanas`);
+      if (abs >= 3) reasons.push(`${abs} faltas em 2 semanas`);
       const le = lastEntry.find((x) => x.studentId === s.id)?.last;
       if (!le || (term && le < term.startsOn)) {
         noRecords.count++;
@@ -166,7 +166,7 @@ export async function getTeacherToday(ctx: SessionContext) {
           const [a, b, c] = list.slice(-3);
           const idx = (k: string | null) => a.scale.findIndex((l) => l.key === k);
           if (idx(a.level) === idx(b.level) && idx(b.level) === idx(c.level) && idx(c.level) < a.scale.length - 1)
-            reasons.push(`Mesmo nível nas três últimas sondagens de ${a.tplName.toLowerCase()}`);
+            reasons.push(`${a.kind === "escrita" ? "Escrita" : a.kind === "leitura" ? "Leitura" : a.kind === "matematica" ? "Matemática" : a.tplName} sem avanço em 3 sondagens`);
         }
       }
       if (reasons.length)

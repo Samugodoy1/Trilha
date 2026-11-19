@@ -204,7 +204,7 @@ export default async function ComparePage({ params, searchParams }: { params: Pr
               <ul className="space-y-2">
                 {entriesIn(t).map(({ e }) => (
                   <li key={e.id} className={cn("rounded-[14px] bg-surface p-3 shadow-e1")}>
-                    <p className="text-footnote font-semibold text-notes">
+                    <p className="text-footnote font-semibold text-notes-ink">
                       {entryKinds[e.kind].label} · {formatDay(e.occurredOn)}
                     </p>
                     <p className="text-subhead">{e.title}</p>

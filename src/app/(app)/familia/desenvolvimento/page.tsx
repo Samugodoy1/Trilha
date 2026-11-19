@@ -64,9 +64,9 @@ export default async function GrowthPage() {
       {graded.length > 0 && (
         <section aria-labelledby="avaliacoes" className="mb-10">
           <SectionTitle id="avaliacoes">Avaliações</SectionTitle>
-          <div className="-mx-4 md:mx-0">
+          <div className="-mx-5 md:mx-0">
             {subjects.map((s, i) => (
-              <div key={s} className={`flex items-center gap-4 px-4 py-3 md:px-0 ${i < subjects.length - 1 ? "shadow-[inset_0_-0.5px_0_var(--separator)]" : ""}`}>
+              <div key={s} className={`flex items-center gap-4 px-5 py-3 md:px-0 ${i < subjects.length - 1 ? "shadow-[inset_0_-0.5px_0_var(--separator)]" : ""}`}>
                 <p className="flex-1 text-body">{s}</p>
                 <div className="flex gap-2">
                   {terms.map(([tid, tname]) => {
@@ -130,7 +130,7 @@ export default async function GrowthPage() {
                   {entryKinds[e.kind].label}
                 </CategoryLabel>
                 <h3 className="mt-1 text-headline">{e.title}</h3>
-                <p className="mt-1 text-body text-label-2">{e.body}</p>
+                <p className="mt-1 text-body">{e.body}</p>
                 <p className="mt-2 text-footnote text-label-2">
                   {author} · {formatDay(e.occurredOn)}
                 </p>

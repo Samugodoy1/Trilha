@@ -16,7 +16,6 @@ export default async function WeeklyListPage() {
   return (
     <Page
       title="Nossa semana"
-      subtitle="Um resumo acolhedor para as famílias acompanharem o que acontece na escola."
       actions={<Button size="sm" variant="tinted" icon={Plus} href="/semana/nova">Nova</Button>}
       width="default"
     >
@@ -31,7 +30,7 @@ export default async function WeeklyListPage() {
                 <img src={`/api/media/${p.cover}`} alt="" loading="lazy" className="aspect-[16/9] w-full object-cover" />
               ) : (
                 <div className="flex aspect-[16/9] items-center justify-center bg-[color-mix(in_oklab,var(--family)_8%,var(--surface))]">
-                  <BookOpen aria-hidden className="size-8 text-family/60" strokeWidth={1.6} />
+                  <BookOpen aria-hidden className="size-8 text-family-ink/60" strokeWidth={1.6} />
                 </div>
               )}
               <div className="p-4">

@@ -110,7 +110,7 @@ function MenuPanel({ items, pos, onClose, label }: { items: MenuEntry[]; pos: Po
             className={cn(
               "flex w-full items-center gap-3 px-4 py-[9px] text-left text-body outline-none",
               "hover:bg-fill focus-visible:bg-fill",
-              item.destructive ? "text-critical" : "text-label",
+              item.destructive ? "text-critical-ink" : "text-label",
               item.disabled && "opacity-40",
             )}
           >

@@ -27,7 +27,7 @@ export default async function FamilyHome() {
     <Page
       title={child.firstName}
       eyebrow={`${child.className} · ${child.schoolShort}`}
-      subtitle={`${greeting()}, ${firstName(ctx.user.name)}. ${list.length > 1 ? "Toque na foto para trocar de filho." : formatFullDay(today) + "."}`}
+      subtitle={`${greeting()}, ${firstName(ctx.user.name)}.`}
       width="default"
       actions={<ChildAvatarSwitcher students={list.map((s) => ({ id: s.id, name: s.name, hue: s.hue, detail: `${s.className} · ${s.schoolShort}` }))} activeId={child.id} />}
     >
@@ -43,7 +43,7 @@ export default async function FamilyHome() {
                   <span className="text-footnote text-label-2">{a.startsAt ? `${formatFullDay(isoFromTimestamp(a.startsAt))}, ${formatTime(a.startsAt)}` : ""}</span>
                 </div>
                 <h3 className="mt-1.5 text-headline">{a.title}</h3>
-                {a.body && <p className="mt-1 text-body text-label-2">{a.body}</p>}
+                {a.body && <p className="mt-1 text-callout leading-snug">{a.body}</p>}
                 <div className="mt-3">
                   <AnnouncementActions
                     announcementId={a.id}
@@ -73,7 +73,7 @@ export default async function FamilyHome() {
                     <p className="text-subhead font-semibold">{author}</p>
                     <p className="text-footnote text-label-2">{formatRelativeDay(isoFromTimestamp(f.publishedAt!))}</p>
                   </div>
-                  <span className="flex items-center gap-1 text-footnote font-semibold text-family">
+                  <span className="flex items-center gap-1 text-footnote font-semibold text-family-ink">
                     <Star aria-hidden className="size-3.5 fill-current" />
                     {feedbackTones[f.tone].label}
                   </span>
@@ -101,16 +101,16 @@ export default async function FamilyHome() {
         {d.pendingTasks.length === 0 ? (
           <p className="text-callout text-label-2">Nenhuma tarefa pendente.</p>
         ) : (
-          <ul className="-mx-4 md:mx-0">
+          <ul className="-mx-5 md:mx-0">
             {d.pendingTasks.map((t, i) => (
-              <li key={t.id} className="flex items-start gap-3.5 pl-4 md:pl-0">
+              <li key={t.id} className="flex items-start gap-3.5 pl-5 md:pl-0">
                 <span className="mt-[12px]">
                   <TaskCheck taskId={t.id} studentId={child.id} done={Boolean(t.completion)} title={t.title} acceptsSubmissions={t.acceptsSubmissions} />
                 </span>
                 <div className={cn("min-w-0 flex-1 py-[10px] pr-4", i < d.pendingTasks.length - 1 && "shadow-[inset_0_-0.5px_0_var(--separator)]")}>
                   <p className="text-body">{t.title}</p>
                   <p className="text-subhead text-label-2">
-                    {t.subject ?? taskKinds[t.kind]} – <span className={t.dueOn! <= today ? "text-critical" : ""}>{formatRelativeDay(t.dueOn!)}</span>
+                    {t.subject ?? taskKinds[t.kind]} – <span className={t.dueOn! <= today ? "text-critical-ink" : ""}>{formatRelativeDay(t.dueOn!)}</span>
                   </p>
                   {t.instructions && <p className="mt-0.5 line-clamp-2 text-subhead text-label-2">{t.instructions}</p>}
                 </div>
@@ -149,11 +149,11 @@ export default async function FamilyHome() {
       {d.upcoming.length > 0 && (
         <section aria-labelledby="eventos" className="mb-9">
           <SectionTitle id="eventos">Na escola</SectionTitle>
-          <ul className="-mx-4 md:mx-0">
+          <ul className="-mx-5 md:mx-0">
             {d.upcoming.map((a, i) => (
-              <li key={a.id} className={cn("flex items-center gap-4 px-4 py-2.5 md:px-0", i < d.upcoming.length - 1 && "shadow-[inset_0_-0.5px_0_var(--separator)]")}>
+              <li key={a.id} className={cn("flex items-center gap-4 px-5 py-2.5 md:px-0", i < d.upcoming.length - 1 && "shadow-[inset_0_-0.5px_0_var(--separator)]")}>
                 <div className="w-11 shrink-0 text-center leading-none">
-                  <p className="text-caption-2 font-semibold text-critical uppercase">{new Intl.DateTimeFormat("pt-BR", { month: "short", timeZone: "America/Sao_Paulo" }).format(a.startsAt!).replace(".", "")}</p>
+                  <p className="text-caption-2 font-semibold text-critical-ink uppercase">{new Intl.DateTimeFormat("pt-BR", { month: "short", timeZone: "America/Sao_Paulo" }).format(a.startsAt!).replace(".", "")}</p>
                   <p className="mt-0.5 text-title-2 font-normal tabular">{new Intl.DateTimeFormat("pt-BR", { day: "numeric", timeZone: "America/Sao_Paulo" }).format(a.startsAt!)}</p>
                 </div>
                 <div className="min-w-0 flex-1">
@@ -178,12 +178,12 @@ export default async function FamilyHome() {
               <ChevronRight aria-hidden className="size-5 text-label-3" strokeWidth={2.6} />
             </Link>
           </SectionTitle>
-          <div className="scrollbar-none -mx-4 flex gap-3 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:grid-cols-3 md:px-0">
+          <div className="scrollbar-none -mx-5 flex gap-3 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:px-0">
             {wins.map(({ e }) => (
               <article key={e.id} className="w-64 shrink-0 rounded-[20px] bg-surface p-4 shadow-e1 md:w-auto">
                 <p className="text-footnote font-semibold text-achievement-ink">{formatDay(e.occurredOn)}</p>
                 <h3 className="mt-1 text-headline">{e.title}</h3>
-                <p className="mt-1 line-clamp-4 text-subhead text-label-2">{e.body}</p>
+                <p className="mt-1 line-clamp-4 text-callout leading-snug">{e.body}</p>
               </article>
             ))}
           </div>

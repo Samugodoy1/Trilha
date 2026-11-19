@@ -34,7 +34,7 @@ export function ConversationList({ items, base, selectedId, family }: { items: C
       </div>
     );
   return (
-    <ul className="-mx-4 md:mx-0">
+    <ul className="-mx-5 md:mx-0">
       {items.map((c, i) => {
         const active = c.id === selectedId;
         return (

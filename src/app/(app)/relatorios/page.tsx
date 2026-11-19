@@ -25,7 +25,6 @@ export default async function ReportsPage() {
   return (
     <Page
       title="Relatórios"
-      subtitle="Pareceres e relatórios montados a partir do que você já registrou — sempre revisados por você."
       actions={<Button size="sm" variant="tinted" icon={Plus} href="/relatorios/novo">Novo</Button>}
     >
       {rows.length === 0 ? (

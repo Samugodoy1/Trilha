@@ -50,11 +50,11 @@ export function TasksView({ upcoming, past, classes, openNew }: { upcoming: Row[
 
   return (
     <>
-      <div className="-mx-4 md:mx-0">
-        {groups.length === 0 && <p className="px-4 py-8 text-callout text-label-2 md:px-0">Nenhuma tarefa publicada.</p>}
+      <div className="-mx-5 md:mx-0">
+        {groups.length === 0 && <p className="px-5 py-8 text-callout text-label-2 md:px-0">Nenhuma tarefa publicada.</p>}
         {groups.map((g) => (
           <section key={g.label} aria-label={g.label}>
-            <h2 className="px-4 pt-4 pb-1 font-sans text-subhead font-semibold text-label-2 shadow-[inset_0_0.5px_0_var(--separator)] md:px-0">{g.label}</h2>
+            <h2 className="px-5 pt-4 pb-1 font-sans text-subhead font-semibold text-label-2 shadow-[inset_0_0.5px_0_var(--separator)] md:px-0">{g.label}</h2>
             <ul>
               {g.rows.map((r, i) => (
                 <TaskRow key={r.id} r={r} last={i === g.rows.length - 1} past={g.label === "Encerradas"} />
@@ -79,7 +79,7 @@ function TaskRow({ r, last, past }: { r: Row; last: boolean; past: boolean }) {
   const router = useRouter();
   const today = todayISO();
   return (
-    <li className={cn("group flex items-start gap-3.5 pl-4 md:pl-0", pending && "opacity-50")}>
+    <li className={cn("group flex items-start gap-3.5 pl-5 md:pl-0", pending && "opacity-50")}>
       <ProgressRing value={r.done} total={r.total} />
       <div className={cn("min-w-0 flex-1 py-[11px] pr-4", !last && "shadow-[inset_0_-0.5px_0_var(--separator)]")}>
         <div className="flex items-start gap-2">
@@ -88,7 +88,7 @@ function TaskRow({ r, last, past }: { r: Row; last: boolean; past: boolean }) {
             type="button"
             aria-label={`Apagar ${r.title}`}
             onClick={() => start(async () => (await deleteTaskAction(r.id), router.refresh()))}
-            className="rounded-full p-1 text-label-3 opacity-0 transition-opacity group-hover:opacity-100 hover:text-critical focus:opacity-100"
+            className="rounded-full p-1 text-label-3 opacity-0 transition-opacity group-hover:opacity-100 hover:text-critical-ink focus:opacity-100"
           >
             <Trash2 className="size-4" />
           </button>
@@ -98,13 +98,13 @@ function TaskRow({ r, last, past }: { r: Row; last: boolean; past: boolean }) {
           {r.dueOn && (
             <>
               {" – "}
-              <span className={cn(r.dueOn <= today && !past ? "text-critical" : "")}>{formatRelativeDay(r.dueOn)}</span>
+              <span className={cn(r.dueOn <= today && !past ? "text-critical-ink" : "")}>{formatRelativeDay(r.dueOn)}</span>
             </>
           )}
         </p>
-        {r.instructions && <p className="mt-1 line-clamp-2 text-subhead text-label-2">{r.instructions}</p>}
+        {r.instructions && <p className="mt-0.5 line-clamp-1 text-subhead text-label-2">{r.instructions}</p>}
         <p className="mt-1 text-footnote text-label-2">
-          {r.done} de {r.total} famílias marcaram como feita
+          {r.done > 0 ? `${r.done} de ${r.total} famílias concluíram` : "Nenhuma família concluiu ainda"}
           {r.acceptsSubmissions ? " · aceita envio de foto" : ""}
           {r.links.length ? ` · ${r.links.length} link${r.links.length > 1 ? "s" : ""}` : ""}
         </p>

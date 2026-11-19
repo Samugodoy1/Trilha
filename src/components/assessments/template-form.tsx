@@ -76,7 +76,7 @@ export function NewTemplateButton() {
                     className="h-9 flex-1 bg-transparent text-callout font-medium outline-none"
                   />
                   {levels.length > 2 && (
-                    <button type="button" aria-label="Remover nível" onClick={() => setLevels(levels.filter((_, j) => j !== i))} className="text-label-3 hover:text-critical">
+                    <button type="button" aria-label="Remover nível" onClick={() => setLevels(levels.filter((_, j) => j !== i))} className="text-label-3 hover:text-critical-ink">
                       <Trash2 className="size-4" />
                     </button>
                   )}
@@ -115,7 +115,7 @@ export function NewTemplateButton() {
                   aria-label={`Critério ${i + 1}`}
                   className="h-10 flex-1 rounded-[10px] bg-surface px-3 text-callout shadow-e1 outline-none"
                 />
-                <button type="button" aria-label="Remover critério" onClick={() => setCriteria(criteria.filter((_, j) => j !== i))} className="px-2 text-label-3 hover:text-critical">
+                <button type="button" aria-label="Remover critério" onClick={() => setCriteria(criteria.filter((_, j) => j !== i))} className="px-2 text-label-3 hover:text-critical-ink">
                   <Trash2 className="size-4" />
                 </button>
               </div>

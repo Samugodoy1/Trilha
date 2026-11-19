@@ -11,7 +11,7 @@ import { useToast } from "@/components/ui/toast";
 import { Spinner } from "@/components/ui/spinner";
 import { PostCard } from "@/components/family/post-card";
 import { saveWeeklyAction, suggestWeeklyAction, uploadPhotoAction, type WeeklySuggestion } from "@/server/actions/weekly";
-import { addDays, formatDay, weekStart as weekStartOf, todayISO } from "@/lib/format";
+import { addDays, formatDay, formatDayShort, weekStart as weekStartOf, todayISO } from "@/lib/format";
 import { cn } from "@/lib/cn";
 
 const STANDARD = [
@@ -131,15 +131,13 @@ export function WeeklyComposer({
             <ChevronLeft className="size-4" />
           </button>
           <span className="px-1 text-subhead font-medium tabular">
-            {formatDay(week)} – {formatDay(addDays(week, 4))}
+            {week.slice(5, 7) === addDays(week, 4).slice(5, 7) ? `${Number(week.slice(8))}–${formatDayShort(addDays(week, 4))}` : `${formatDayShort(week)} – ${formatDayShort(addDays(week, 4))}`}
           </span>
           <button type="button" aria-label="Próxima semana" onClick={() => setWeek(addDays(week, 7))} className="flex size-8 items-center justify-center rounded-full hover:bg-fill-2">
             <ChevronRight className="size-4" />
           </button>
         </div>
-        <span className="ml-auto">
-          <SegmentedControl size="sm" label="Modo" value={mode} onChange={setMode} options={[{ value: "edit", label: "Editar" }, { value: "preview", label: "Como a família vê" }]} />
-        </span>
+        <SegmentedControl className="w-full md:ml-auto md:w-auto" label="Modo" value={mode} onChange={setMode} options={[{ value: "edit", label: "Editar" }, { value: "preview", label: "Como a família vê" }]} />
       </div>
 
       {mode === "preview" ? (
@@ -199,8 +197,8 @@ export function WeeklyComposer({
               {sections.map((s, i) => (
                 <div key={s.key} className="group">
                   <div className="flex items-center justify-between">
-                    <span className={cn("text-footnote font-semibold tracking-[0.03em] uppercase", s.key === "casa" ? "text-family" : "text-label-2")}>{s.title}</span>
-                    <button type="button" aria-label={`Remover ${s.title}`} onClick={() => setSections(sections.filter((_, j) => j !== i))} className="rounded-full p-1 text-label-3 opacity-60 hover:text-critical group-hover:opacity-100">
+                    <span className={cn("text-footnote font-semibold tracking-[0.03em] uppercase", s.key === "casa" ? "text-family-ink" : "text-label-2")}>{s.title}</span>
+                    <button type="button" aria-label={`Remover ${s.title}`} onClick={() => setSections(sections.filter((_, j) => j !== i))} className="rounded-full p-1 text-label-3 opacity-60 hover:text-critical-ink group-hover:opacity-100">
                       <Trash2 className="size-3.5" />
                     </button>
                   </div>

@@ -113,7 +113,7 @@ export function RoundEntry({
 
   return (
     <div className="space-y-5">
-      <div className="sticky top-[calc(env(safe-area-inset-top)+52px)] z-20 -mx-4 bg-canvas/90 px-4 py-3 backdrop-blur-xl md:-mx-8 md:px-8">
+      <div className="sticky top-[calc(env(safe-area-inset-top)+44px)] md:top-14 z-20 -mx-5 bg-canvas/90 px-5 py-3 backdrop-blur-xl md:-mx-8 md:px-8">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline gap-2">
@@ -156,7 +156,7 @@ export function RoundEntry({
         </dl>
       </Disclosure>
 
-      <div className="-mx-4 md:mx-0" role="list" aria-label="Alunos">
+      <div className="-mx-5 md:mx-0" role="list" aria-label="Alunos">
         {students.map((s, i) => {
           const r = results[s.id];
           const prev = previous[s.id];
@@ -172,14 +172,14 @@ export function RoundEntry({
               role="listitem"
               onClick={() => setFocusIdx(i)}
               className={cn(
-                "flex flex-col gap-3 px-4 py-3 transition-colors md:flex-row md:items-center",
+                "flex flex-col gap-3 px-5 py-3.5 transition-colors md:flex-row md:items-center md:px-4",
                 i < students.length - 1 && "shadow-[inset_0_-0.5px_0_var(--separator)]",
                 focusIdx === i && !readOnly && "md:bg-accent-soft/60",
               )}
             >
-              <div className="flex min-w-0 items-center gap-3 md:w-60 md:shrink-0">
+              <div className="flex min-w-0 items-center gap-3 md:w-80 md:shrink-0">
                 <Avatar name={s.name} hue={s.hue} size="sm" />
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <p className="truncate text-callout font-medium">{s.name}</p>
                   <p className="flex items-center gap-1 text-footnote text-label-2">
                     {prev ? (
@@ -193,34 +193,7 @@ export function RoundEntry({
                     )}
                   </p>
                 </div>
-              </div>
-
-              <div className="flex flex-1 flex-wrap items-center gap-1.5" role="radiogroup" aria-label={`Nível de ${s.name}`}>
-                {scale.map((l) => {
-                  const on = r?.levelKey === l.key && !r?.absent;
-                  return (
-                    <button
-                      key={l.key}
-                      type="button"
-                      role="radio"
-                      aria-checked={on}
-                      disabled={readOnly}
-                      title={l.label}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setFocusIdx(i);
-                        update(s.id, { levelKey: on ? null : l.key, absent: false });
-                      }}
-                      className={cn(
-                        "press h-9 min-w-11 rounded-[10px] px-2.5 text-subhead font-semibold transition-colors disabled:opacity-60",
-                        on ? "text-white shadow-e1" : "bg-fill text-label hover:bg-fill-2",
-                      )}
-                      style={on ? { background: color } : undefined}
-                    >
-                      {l.short}
-                    </button>
-                  );
-                })}
+                <div className="flex shrink-0 items-center gap-0.5">
                 <button
                   type="button"
                   aria-pressed={r?.absent ?? false}
@@ -229,7 +202,7 @@ export function RoundEntry({
                     e.stopPropagation();
                     update(s.id, { absent: !r?.absent, levelKey: null });
                   }}
-                  className={cn("press h-9 rounded-[10px] px-2.5 text-footnote font-medium", r?.absent ? "bg-label text-canvas" : "text-label-2 hover:bg-fill")}
+                  className={cn("press h-8 rounded-full px-3 text-footnote font-medium", r?.absent ? "bg-label text-canvas" : "text-accent hover:bg-fill")}
                 >
                   Ausente
                 </button>
@@ -246,6 +219,40 @@ export function RoundEntry({
                 >
                   <MessageSquareText aria-hidden className="size-[18px]" strokeWidth={2} />
                 </button>
+                </div>
+              </div>
+
+              <div
+                className="grid flex-1 gap-1.5 md:flex md:flex-wrap md:items-center"
+                style={{ gridTemplateColumns: `repeat(${scale.length}, minmax(0, 1fr))` }}
+                role="radiogroup"
+                aria-label={`Nível de ${s.name}`}
+              >
+                {scale.map((l) => {
+                  const on = r?.levelKey === l.key && !r?.absent;
+                  return (
+                    <button
+                      key={l.key}
+                      type="button"
+                      role="radio"
+                      aria-checked={on}
+                      disabled={readOnly}
+                      title={l.label}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFocusIdx(i);
+                        update(s.id, { levelKey: on ? null : l.key, absent: false });
+                      }}
+                      className={cn(
+                        "press h-10 rounded-[10px] px-1 text-subhead font-semibold transition-colors disabled:opacity-60 md:h-9 md:min-w-11 md:px-2.5",
+                        on ? "text-white shadow-e1" : "bg-fill text-label hover:bg-fill-2",
+                      )}
+                      style={on ? { background: color } : undefined}
+                    >
+                      {l.short}
+                    </button>
+                  );
+                })}
               </div>
 
               {criteria.length > 0 && (

@@ -38,7 +38,7 @@ export function Page({
   useEffect(() => {
     const el = sentinel.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => setCollapsed(!e.isIntersecting), { rootMargin: "-52px 0px 0px 0px" });
+    const io = new IntersectionObserver(([e]) => setCollapsed(!e.isIntersecting), { rootMargin: "-44px 0px 0px 0px" });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -54,7 +54,7 @@ export function Page({
           collapsed || hideLargeTitle ? "material-chrome hairline-b" : "bg-transparent",
         )}
       >
-        <div className={cn("mx-auto grid h-[56px] grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 md:px-8", maxW)}>
+        <div className={cn("mx-auto grid h-11 grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 md:h-14 md:px-8", maxW)}>
           <div className="flex min-w-0 items-center">
             {back && (
               <Link
@@ -62,7 +62,7 @@ export function Page({
                 aria-label={`Voltar para ${back.label}`}
                 title={back.label}
                 className={cn(
-                  "press flex h-10 min-w-10 items-center justify-center gap-0.5 rounded-full text-label outline-none",
+                  "press flex h-9 min-w-9 items-center justify-center gap-0.5 rounded-full text-label outline-none md:h-10 md:min-w-10",
                   collapsed || hideLargeTitle ? "hover:bg-fill" : "glass",
                   "md:px-3 md:pl-2",
                 )}
@@ -85,9 +85,9 @@ export function Page({
         </div>
       </div>
 
-      <main id="conteudo" className={cn("mx-auto px-4 pb-36 md:px-8 lg:pb-16", maxW)}>
+      <main id="conteudo" className={cn("mx-auto px-5 pb-36 md:px-8 lg:pb-16", maxW)}>
         {!hideLargeTitle && (
-          <header className="pt-0.5 pb-5">
+          <header className="pt-1 pb-5 md:pt-2">
             {eyebrow && <div className="mb-0.5 text-footnote font-semibold text-label-2 uppercase tracking-[0.03em]">{eyebrow}</div>}
             <h1 className={cn("text-large-title", titleTint && "text-accent")}>{title}</h1>
             {subtitle && <div className="mt-1 text-callout text-label-2">{subtitle}</div>}

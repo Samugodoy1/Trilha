@@ -22,7 +22,6 @@ export default async function AssessmentsPage() {
   return (
     <Page
       title="Sondagens"
-      subtitle="Leitura, escrita, matemática e os modelos que a sua escola definir."
       actions={isTeacher(ctx) ? <Button size="sm" variant="tinted" icon={Plus} href="/sondagens/nova">Nova</Button> : undefined}
       width="wide"
     >

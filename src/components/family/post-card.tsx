@@ -30,7 +30,7 @@ export function PostCard({ post, className }: { post: PostView; className?: stri
             {post.className} · {post.dateLabel}
           </p>
         </div>
-        {post.personal && <span className="rounded-full bg-[color-mix(in_oklab,var(--family)_12%,transparent)] px-2.5 py-1 text-caption font-semibold text-family">Só para vocês</span>}
+        {post.personal && <span className="rounded-full bg-[color-mix(in_oklab,var(--family)_12%,transparent)] px-2.5 py-1 text-caption font-semibold text-family-ink">Só para vocês</span>}
       </header>
       <h3 className="px-5 pt-4 text-title-2">{post.title}</h3>
       {hero && (
@@ -52,7 +52,7 @@ export function PostCard({ post, className }: { post: PostView; className?: stri
         {post.sections.map((s) =>
           s.key === "casa" ? (
             <section key={s.key} className="rounded-[16px] bg-[color-mix(in_oklab,var(--family)_8%,var(--surface))] p-4">
-              <h4 className="flex items-center gap-1.5 font-sans text-subhead font-semibold text-family">
+              <h4 className="flex items-center gap-1.5 font-sans text-subhead font-semibold text-family-ink">
                 <House aria-hidden className="size-4" strokeWidth={2.3} />
                 {s.title}
               </h4>

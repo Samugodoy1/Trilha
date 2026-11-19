@@ -40,11 +40,11 @@ export function StudentList({ students, classId, termStart, initialFilter, canRe
           onChange={setFilter}
           options={[
             { value: "todos", label: "Todos" },
-            { value: "sem-registros", label: `Sem registro no bimestre (${without})` },
+            { value: "sem-registros", label: `Sem registro (${without})` },
           ]}
         />
       </div>
-      <div className="-mx-4 md:mx-0" role="list">
+      <div className="-mx-5 md:mx-0" role="list">
         {list.length === 0 && <p className="px-4 py-10 text-center text-callout text-label-2">Nenhum aluno encontrado.</p>}
         {list.map((s) => (
           <StudentRow key={s.id} s={s} classId={classId} canRecord={canRecord} />
@@ -69,17 +69,15 @@ function StudentRow({ s, classId, canRecord }: { s: Student; classId: string; ca
   const detail = [s.writing && `Escrita: ${s.writing}`, s.reading && `Leitura: ${s.reading}`].filter(Boolean).join(" · ");
   return (
     <div role="listitem" {...bind}>
-      <Link href={`/alunos/${s.id}`} className="flex items-center gap-3 pl-4 outline-none select-none hover:bg-fill/60 focus-visible:bg-fill [-webkit-touch-callout:none]">
-        <Avatar name={s.name} hue={s.hue} />
+      <Link href={`/alunos/${s.id}`} className="flex items-center gap-3 pl-5 outline-none select-none hover:bg-fill/60 md:pl-0 focus-visible:bg-fill [-webkit-touch-callout:none]">
+        <Avatar name={s.name} hue={s.hue} size="md" />
         <span className="flex min-w-0 flex-1 items-center gap-3 py-2.5 pr-4 [div:not(:last-child)>a>&]:shadow-[inset_0_-0.5px_0_var(--separator)]">
           <span className="min-w-0 flex-1">
             <span className="block truncate text-body">{s.name}</span>
             <span className="block truncate text-footnote text-label-2">
-              {s.lastEntry ? `Último registro: ${formatRelativeDay(s.lastEntry).toLowerCase()}` : "Sem registros individuais"}
-              {detail ? ` · ${detail}` : ""}
+              {s.writing ? `Escrita: ${s.writing}` : s.reading ? `Leitura: ${s.reading}` : s.lastEntry ? `Último registro ${formatRelativeDay(s.lastEntry).toLowerCase()}` : "Sem registros"}
             </span>
           </span>
-          {s.number && <span className="text-footnote text-label-3 tabular">nº {s.number}</span>}
           <ChevronRight aria-hidden className="size-4 text-label-3" strokeWidth={2.4} />
         </span>
       </Link>
@@ -170,7 +168,7 @@ export function AddStudentsButton({ classId }: { classId: string }) {
               </label>
               {parsed.rows.length > 0 && (
                 <div className="overflow-hidden rounded-xl bg-surface shadow-e1">
-                  <p className="px-4 pt-3 pb-1 text-footnote font-semibold text-label-2">Pré-visualização · {parsed.rows.length} alunos</p>
+                  <p className="px-5 pt-3 pb-1 text-footnote font-semibold text-label-2">Pré-visualização · {parsed.rows.length} alunos</p>
                   <ul className="max-h-48 overflow-y-auto">
                     {parsed.rows.map((r, i) => (
                       <li key={i} className="flex justify-between gap-3 px-4 py-1.5 text-subhead">

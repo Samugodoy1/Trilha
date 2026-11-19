@@ -104,7 +104,7 @@ export function Wizard({ firstName, hasSchool, schoolName }: { firstName: string
       <GraduationCap aria-hidden className="mb-4 size-10 text-accent" strokeWidth={1.7} />
       <h1 className="text-title-1">Com quem você trabalha?</h1>
       <p className="mt-2 mb-6 text-callout text-label-2">{schoolName ? `${schoolName}. ` : ""}A etapa ajusta sondagens e avaliações ao seu contexto.</p>
-      <div className="-mx-4 md:mx-0">
+      <div className="-mx-5 md:mx-0">
         {(Object.keys(stageLabels) as Stage[]).map((s, i, a) => (
           <button key={s} type="button" role="radio" aria-checked={s === stage} onClick={() => { setStage(s); setGrade(s === "fundamental_2" ? 6 : s === "medio" ? 1 : s === "infantil" ? 0 : 3); }} className="flex w-full items-center pl-4 text-left md:pl-0">
             <span className={cn("flex flex-1 items-center py-3.5 pr-4", i < a.length - 1 && "shadow-[inset_0_-0.5px_0_var(--separator)]")}>

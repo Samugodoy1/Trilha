@@ -96,7 +96,7 @@ export function InviteFlow({ initialCode }: { initialCode: string }) {
         hint={mode === "new" ? "Pelo menos 10 caracteres, com letras e números." : undefined}
       />
       {error && (
-        <p role="alert" className="rounded-[12px] bg-[color-mix(in_oklab,var(--critical)_10%,transparent)] px-4 py-3 text-subhead text-critical">
+        <p role="alert" className="rounded-[12px] bg-[color-mix(in_oklab,var(--critical)_10%,transparent)] px-4 py-3 text-subhead text-critical-ink">
           {error}
         </p>
       )}

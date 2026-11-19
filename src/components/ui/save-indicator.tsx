@@ -24,7 +24,7 @@ export function SaveIndicator({ state, savedLabel = "Rascunho salvo" }: { state:
           </motion.span>
         )}
         {state === "error" && (
-          <motion.span key="e" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="inline-flex items-center gap-1 text-critical">
+          <motion.span key="e" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="inline-flex items-center gap-1 text-critical-ink">
             <CloudAlert aria-hidden className="size-3.5" strokeWidth={2.4} />
             Não salvo
           </motion.span>

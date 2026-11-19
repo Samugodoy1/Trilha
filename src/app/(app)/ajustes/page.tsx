@@ -39,7 +39,7 @@ export default async function SettingsPage() {
     : [];
 
   return (
-    <div className="min-h-dvh bg-surface-2 dark:bg-canvas">
+    <div data-top-surface className="min-h-dvh bg-surface-2 dark:bg-canvas">
       <Page title="Ajustes" width="narrow">
         <div className="space-y-8">
           <div className="flex items-center gap-4 rounded-[12px] bg-surface p-4">

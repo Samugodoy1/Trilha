@@ -40,7 +40,7 @@ export function JournalFilters({ classes }: { classes: { id: string; name: strin
   return (
     <div className={cn("space-y-3 transition-opacity", pending && "opacity-70")}>
       <SearchField value={q} onChange={setQ} placeholder="Buscar no diário" />
-      <div className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4">
+      <div className="scrollbar-none -mx-5 flex gap-2 overflow-x-auto px-5">
         <Menu label="Tipo" align="start" items={[{ label: "Todos os tipos", checked: !tipo, onSelect: () => set("tipo", null) }, { separator: true }, ...(Object.keys(entryKinds) as EntryKind[]).map((k) => ({ label: entryKinds[k].label, checked: tipo === k, onSelect: () => set("tipo", k) }))]}>
           {(p) => <Chip {...p} label={tipo ? entryKinds[tipo].label : "Tipo"} active={Boolean(tipo)} />}
         </Menu>

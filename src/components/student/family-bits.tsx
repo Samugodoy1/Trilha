@@ -10,7 +10,7 @@ export function RevokeInviteButton({ id }: { id: string }) {
       type="button"
       disabled={pending}
       onClick={() => start(() => revokeInviteAction(id))}
-      className="rounded-full px-2.5 py-1 text-footnote font-semibold text-critical hover:bg-[color-mix(in_oklab,var(--critical)_10%,transparent)] disabled:opacity-50"
+      className="rounded-full px-2.5 py-1 text-footnote font-semibold text-critical-ink hover:bg-[color-mix(in_oklab,var(--critical)_10%,transparent)] disabled:opacity-50"
     >
       Revogar
     </button>

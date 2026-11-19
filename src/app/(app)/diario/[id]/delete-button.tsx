@@ -15,7 +15,7 @@ export function DeleteEntryButton({ id }: { id: string }) {
   const toast = useToast();
   return (
     <>
-      <IconButton icon={Trash2} label="Apagar registro" variant="plain" className="text-critical hover:bg-[color-mix(in_oklab,var(--critical)_10%,transparent)]" onClick={() => setOpen(true)} />
+      <IconButton icon={Trash2} label="Apagar registro" variant="plain" className="text-critical-ink hover:bg-[color-mix(in_oklab,var(--critical)_10%,transparent)]" onClick={() => setOpen(true)} />
       <Sheet open={open} onClose={() => setOpen(false)} title="Apagar registro?" size="sm">
         <p className="text-callout text-label-2">O registro sai do diário e da linha do tempo dos alunos. Esta ação não pode ser desfeita.</p>
         <div className="mt-5 flex gap-2">

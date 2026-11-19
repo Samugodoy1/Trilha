@@ -101,7 +101,7 @@ export default async function ClassPage({ params, searchParams }: { params: Prom
           {[...roundsByTerm.entries()].map(([termName, list]) => (
             <section key={termName}>
               <SectionTitle>{termName}</SectionTitle>
-              <div className="-mx-4 md:mx-0" role="list">
+              <div className="-mx-5 md:mx-0" role="list">
                 {list.map((r) => {
                   const meta = seriesMeta[r.kind];
                   const complete = r.done >= d.students.length;

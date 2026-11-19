@@ -46,7 +46,7 @@ export function NewReportForm({
       </Select>
       <fieldset>
         <legend className="mb-2 px-1 text-subhead font-medium text-label-2">Tipo</legend>
-        <div className="-mx-4 md:mx-0" role="radiogroup">
+        <div className="-mx-5 md:mx-0" role="radiogroup">
           {(Object.keys(reportKinds) as ReportKind[]).map((k, i, arr) => (
             <button
               key={k}

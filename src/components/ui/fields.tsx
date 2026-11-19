@@ -32,7 +32,7 @@ function FieldWrap({
       )}
       {children}
       {error ? (
-        <p id={`${id}-error`} className="px-1 text-footnote text-critical" role="alert">
+        <p id={`${id}-error`} className="px-1 text-footnote text-critical-ink" role="alert">
           {error}
         </p>
       ) : hint ? (

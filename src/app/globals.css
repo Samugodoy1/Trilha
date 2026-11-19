@@ -54,6 +54,12 @@
   --attendance: #34c759;
   --achievement: #ffcc00;
   --achievement-ink: #b25000;
+  --critical-ink: #d70015;
+  --reading-ink: #5856d6;
+  --writing-ink: #c93400;
+  --math-ink: #0071a4;
+  --notes-ink: #8944ab;
+  --family-ink: #d30f45;
   --family: #ff2d55;
   --messages: #007aff;
 
@@ -100,6 +106,18 @@
     --attendance: #30d158;
     --achievement: #ffd60a;
     --achievement-ink: #ffd60a;
+  --critical-ink: #ff6961;
+  --reading-ink: #a5a3ff;
+  --writing-ink: #ffb340;
+  --math-ink: #70d7ff;
+  --notes-ink: #da8fff;
+  --family-ink: #ff6482;
+    --critical-ink: #ff6961;
+    --reading-ink: #a5a3ff;
+    --writing-ink: #ffb340;
+    --math-ink: #70d7ff;
+    --notes-ink: #da8fff;
+    --family-ink: #ff6482;
     --family: #ff375f;
     --messages: #0a84ff;
     --glass-bg: rgb(44 44 46 / 0.62);
@@ -144,6 +162,12 @@
   --attendance: #30d158;
   --achievement: #ffd60a;
   --achievement-ink: #ffd60a;
+  --critical-ink: #ff6961;
+  --reading-ink: #a5a3ff;
+  --writing-ink: #ffb340;
+  --math-ink: #70d7ff;
+  --notes-ink: #da8fff;
+  --family-ink: #ff6482;
   --family: #ff375f;
   --messages: #0a84ff;
   --glass-bg: rgb(44 44 46 / 0.62);
@@ -209,6 +233,12 @@
   --color-attendance: var(--attendance);
   --color-achievement: var(--achievement);
   --color-achievement-ink: var(--achievement-ink);
+  --color-critical-ink: var(--critical-ink);
+  --color-reading-ink: var(--reading-ink);
+  --color-writing-ink: var(--writing-ink);
+  --color-math-ink: var(--math-ink);
+  --color-notes-ink: var(--notes-ink);
+  --color-family-ink: var(--family-ink);
   --color-positive-ink: var(--positive-ink);
   --color-warning-ink: var(--warning-ink);
   --color-family: var(--family);
