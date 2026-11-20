@@ -29,7 +29,7 @@ async function create(): Promise<DB> {
   const demo = process.env.TRILHA_DEMO === "true" || !process.env.DATABASE_URL;
 
   if (process.env.DATABASE_URL) {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 5, idleTimeoutMillis: 10_000 });
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: Number(process.env.DB_POOL_MAX ?? 5), idleTimeoutMillis: 10_000 });
     db = drizzlePg(pool, { schema });
     // Trava no Postgres: várias instâncias serverless podem iniciar ao mesmo tempo.
     const client = await pool.connect();

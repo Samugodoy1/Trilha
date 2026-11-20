@@ -5,7 +5,7 @@ const PUBLIC = ["/entrar", "/criar-conta", "/convite", "/offline.html", "/manife
 /** Barreira leve: sem cookie de sessão, vai para o login. As permissões reais são verificadas no servidor. */
 export function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
-  if (PUBLIC.some((p) => pathname === p || pathname.startsWith(`${p}/`))) return NextResponse.next();
+  if (pathname === "/" || PUBLIC.some((p) => pathname === p || pathname.startsWith(`${p}/`))) return NextResponse.next();
   if (!req.cookies.get("trilha_session")) {
     if (pathname.startsWith("/api/")) return new NextResponse("Não autorizado", { status: 401 });
     const url = req.nextUrl.clone();
