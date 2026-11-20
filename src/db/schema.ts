@@ -741,3 +741,15 @@ export const fileObjects = pgTable("file_objects", {
   data: bytea("data").notNull(),
   createdAt: createdAt(),
 });
+
+/** Itens de "Para hoje" adiados ou ocultados pelo próprio usuário. */
+export const dismissals = pgTable(
+  "dismissals",
+  {
+    userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    itemKey: text("item_key").notNull(),
+    until: date("until").notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.itemKey] })],
+);

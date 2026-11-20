@@ -15,6 +15,7 @@ import { navIcons, type NavItem } from "./icons";
 import { logoutAction, switchMembershipAction, setActiveStudentAction } from "@/server/actions/session";
 import { QuickRecord } from "@/components/teacher/quick-record";
 import { CommandPalette } from "./command-palette";
+import { EdgeSwipeBack } from "./edge-swipe-back";
 
 export type ShellProps = {
   variant: "teacher" | "family" | "staff";
@@ -42,6 +43,16 @@ export function AppShell(props: ShellProps) {
   const [paletteOpen, setPaletteOpen] = useState(false);
 
   useEffect(() => setSidebarOpen(false), [pathname]);
+
+  // Busca aberta por botões em qualquer tela (telefone e tablet)
+  useEffect(() => {
+    const open = () => {
+      setMoreOpen(false);
+      setPaletteOpen(true);
+    };
+    window.addEventListener("trilha:search", open);
+    return () => window.removeEventListener("trilha:search", open);
+  }, []);
 
   // Atalhos de teclado (computador)
   useEffect(() => {
@@ -297,6 +308,19 @@ export function AppShell(props: ShellProps) {
       </div>
 
       <Sheet open={moreOpen} onClose={() => setMoreOpen(false)} title="Mais" size="sm">
+        {variant !== "family" && (
+          <button
+            type="button"
+            onClick={() => {
+              setMoreOpen(false);
+              setTimeout(() => setPaletteOpen(true), 250);
+            }}
+            className="mb-4 flex h-11 w-full items-center gap-2 rounded-[12px] bg-surface px-3 text-left text-body text-label-2"
+          >
+            <Search aria-hidden className="size-[18px]" strokeWidth={2.2} />
+            Buscar alunos e áreas
+          </button>
+        )}
         {variant === "family" && family && family.students.length > 1 && (
           <div className="mb-4">
             <ChildSwitcher family={family} />
@@ -329,6 +353,7 @@ export function AppShell(props: ShellProps) {
         <LogoutButton />
       </Sheet>
 
+      <EdgeSwipeBack />
       {variant === "teacher" && <QuickRecord open={composeOpen} onClose={() => setComposeOpen(false)} />}
       {variant !== "family" && <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} nav={nav} />}
     </div>

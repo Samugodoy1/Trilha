@@ -27,17 +27,20 @@ export default async function CoordinationPage() {
   return (
     <Page title="Visão geral" titleTint eyebrow={ctx.school.name} subtitle="Para apoiar professores e alunos — não para comparar pessoas." width="wide">
       <div className="grid grid-cols-3 gap-2.5">
-        {tiles.map((t) => (
+        {tiles.map((t) => {
+          const zero = t.value === 0 || t.value === "0%";
+          return (
           <div key={t.label} className="flex flex-col justify-between gap-2 rounded-[14px] bg-surface-2 p-3 dark:bg-surface">
             <div className="flex items-start justify-between">
-              <span className="flex size-8 items-center justify-center rounded-full text-white" style={{ background: t.tint }}>
+              <span className="flex size-8 items-center justify-center rounded-full text-white" style={{ background: zero ? "#aeaeb2" : t.tint }}>
                 <t.icon aria-hidden className="size-[17px]" strokeWidth={2.4} />
               </span>
-              <span className="text-[1.75rem] leading-none font-bold tabular">{t.value}</span>
+              <span className={`text-[1.75rem] leading-none font-bold tabular ${zero ? "text-label-3" : ""}`}>{t.value}</span>
             </div>
             <span className="text-subhead font-semibold text-label-2">{t.label}</span>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-12">

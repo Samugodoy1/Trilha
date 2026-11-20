@@ -46,9 +46,9 @@ export default async function StudentPage({ params, searchParams }: { params: Pr
       hideLargeTitle
       width="default"
     >
-      <header className="flex flex-col items-center gap-5 pt-1 pb-7 text-center">
-        <div className="flex flex-col items-center">
-          <Avatar name={student.name} hue={student.hue} size="xl" className="mb-3 size-24 text-[2.25rem]" />
+      <header className="flex flex-col items-center gap-5 pt-1 pb-7 text-center md:flex-row md:items-center md:justify-between md:text-left">
+        <div className="flex flex-col items-center md:flex-row md:gap-5">
+          <Avatar name={student.name} hue={student.hue} size="xl" className="mb-3 size-24 text-[2.25rem] md:mb-0" />
           <div className="min-w-0">
             <h2 className="text-title-1">{student.name}</h2>
             <p className="mt-0.5 text-callout text-label-2">
@@ -56,7 +56,7 @@ export default async function StudentPage({ params, searchParams }: { params: Pr
               {current?.number ? ` · nº ${current.number}` : ""}
               {student.age !== null ? ` · ${student.age} anos` : ""}
             </p>
-            <div className="mt-2 flex flex-wrap justify-center gap-1.5">
+            <div className="mt-2 flex flex-wrap justify-center gap-1.5 md:justify-start">
               {p.guardians.length > 0 ? (
                 <Tag tone="positive" icon={ShieldCheck}>
                   {p.guardians.length === 1 ? "1 responsável conectado" : `${p.guardians.length} responsáveis conectados`}

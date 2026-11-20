@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { ChevronRight } from "lucide-react";
 import { loginAction } from "@/server/actions/session";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,8 @@ const demo = [
   { email: "beatriz@trilha.demo", name: "Beatriz Lima", hue: 120, role: "Professora · outra escola" },
 ];
 
-export function LoginForm({ next }: { next?: string }) {
+export function LoginForm({ next, showDemo = true }: { next?: string; showDemo?: boolean }) {
+  const [demoOpen, setDemoOpen] = useState(false);
   const [state, action, pending] = useActionState(loginAction, undefined);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -69,38 +71,60 @@ export function LoginForm({ next }: { next?: string }) {
         </div>
       </form>
 
-      <section aria-labelledby="demo-h" className="space-y-2">
-        <h2 id="demo-h" className="px-4 font-sans text-footnote font-medium uppercase tracking-[0.04em] text-label-2">
-          Contas de demonstração
-        </h2>
-        <div className="overflow-hidden rounded-xl bg-surface shadow-e1">
-          {demo.map((d, i) => (
-            <button
-              key={d.email}
-              type="button"
-              disabled={pending}
-              onClick={() => {
-                setEmail(d.email);
-                setPassword("trilha2026");
-                setTimeout(() => form.current?.requestSubmit(), 0);
-              }}
-              className="flex w-full items-center gap-3 pl-4 text-left outline-none hover:bg-fill/60 focus-visible:bg-fill disabled:opacity-50"
-            >
-              <Avatar name={d.name} hue={d.hue} size="sm" />
-              <span className={`flex flex-1 items-center gap-2 py-2.5 pr-4 ${i < demo.length - 1 ? "shadow-[inset_0_-0.5px_0_var(--separator)]" : ""}`}>
-                <span className="flex-1">
-                  <span className="block text-callout font-medium">{d.name}</span>
-                  <span className="block text-footnote text-label-2">{d.role}</span>
-                </span>
-                <ChevronRight aria-hidden className="size-4 text-label-3" strokeWidth={2.4} />
-              </span>
-            </button>
-          ))}
-        </div>
-        <p className="px-4 text-footnote text-label-2">
-          Todos os dados são fictícios. Senha de todas as contas: <span className="font-mono">trilha2026</span>
-        </p>
-      </section>
+      {showDemo && (
+        <section className="space-y-2">
+          <button
+            type="button"
+            aria-expanded={demoOpen}
+            aria-controls="demo-list"
+            onClick={() => setDemoOpen((v) => !v)}
+            className="mx-auto flex items-center gap-1 rounded-full px-3 py-1.5 text-subhead font-medium text-label-2 outline-none hover:text-label focus-visible:bg-fill"
+          >
+            Explorar com contas de demonstração
+            <ChevronRight aria-hidden className={`size-4 transition-transform duration-200 ${demoOpen ? "rotate-90" : ""}`} strokeWidth={2.4} />
+          </button>
+          <AnimatePresence initial={false}>
+            {demoOpen && (
+              <motion.div
+                id="demo-list"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 420, damping: 40 }}
+                className="-mx-1 space-y-2 overflow-hidden px-1 pb-1"
+              >
+                <div className="overflow-hidden rounded-xl bg-surface shadow-e1">
+                  {demo.map((d, i) => (
+                    <button
+                      key={d.email}
+                      type="button"
+                      disabled={pending}
+                      onClick={() => {
+                        setEmail(d.email);
+                        setPassword("trilha2026");
+                        setTimeout(() => form.current?.requestSubmit(), 0);
+                      }}
+                      className="flex w-full items-center gap-3 pl-4 text-left outline-none hover:bg-fill/60 focus-visible:bg-fill disabled:opacity-50"
+                    >
+                      <Avatar name={d.name} hue={d.hue} size="sm" />
+                      <span className={`flex flex-1 items-center gap-2 py-2.5 pr-4 ${i < demo.length - 1 ? "shadow-[inset_0_-0.5px_0_var(--separator)]" : ""}`}>
+                        <span className="flex-1">
+                          <span className="block text-callout font-medium">{d.name}</span>
+                          <span className="block text-footnote text-label-2">{d.role}</span>
+                        </span>
+                        <ChevronRight aria-hidden className="size-4 text-label-3" strokeWidth={2.4} />
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                <p className="px-4 text-footnote text-label-2">
+                  Todos os dados são fictícios. Senha de todas as contas: <span className="font-mono">trilha2026</span>
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </section>
+      )}
     </div>
   );
 }

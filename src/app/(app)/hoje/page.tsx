@@ -4,12 +4,14 @@ import { BookOpen, ChevronRight, ClipboardList, Ellipsis, HeartHandshake, ListCh
 import { requireRole } from "@/server/session";
 import { getTeacherToday, type TodayItem } from "@/server/queries/today";
 import { Page } from "@/components/ui/page";
+import { SearchButton } from "@/components/shell/search-button";
 import { Avatar } from "@/components/ui/avatar";
 import { SectionTitle, VisibilityBadge } from "@/components/ui/misc";
 import { formatFullDay, formatRelativeDay, firstName, greeting, todayISO, addDays } from "@/lib/format";
 import { entryKinds } from "@/lib/vocabulary";
 import { cn } from "@/lib/cn";
 import { HojeCompose } from "./quick-actions";
+import { TodayList } from "./today-list";
 
 export const metadata: Metadata = { title: "Hoje" };
 
@@ -37,10 +39,10 @@ function Tile({ icon: Icon, label, count, tint, href }: { icon: LucideIcon; labe
   return (
     <Link href={href} className="press flex flex-col justify-between gap-2 rounded-[14px] bg-surface-2 p-3 outline-none hover:brightness-[0.98] dark:bg-surface">
       <div className="flex items-start justify-between">
-        <span className="flex size-8 items-center justify-center rounded-full text-white" style={{ background: tint }}>
+        <span className="flex size-8 items-center justify-center rounded-full text-white" style={{ background: count ? tint : "#aeaeb2" }}>
           <Icon aria-hidden className="size-[17px]" strokeWidth={2.4} />
         </span>
-        <span className="font-sans text-[1.75rem] leading-none font-bold tabular">{count}</span>
+        <span className={`font-sans text-[1.75rem] leading-none font-bold tabular ${count ? "" : "text-label-3"}`}>{count}</span>
       </div>
       <span className="text-subhead font-semibold text-label-2">{label}</span>
     </Link>
@@ -66,7 +68,7 @@ export default async function TodayPage() {
   for (const u of d.upcoming) byDay.set(u.date, [...(byDay.get(u.date) ?? []), u]);
 
   return (
-    <Page title="Hoje" titleTint eyebrow={formatFullDay(today)} subtitle={`${greeting()}, ${firstName(ctx.user.name)}.${d.term ? ` ${d.term.name}.` : ""}`} width="wide">
+    <Page title="Hoje" titleTint actions={<SearchButton className="md:hidden" />} eyebrow={formatFullDay(today)} subtitle={`${greeting()}, ${firstName(ctx.user.name)}.${d.term ? ` ${d.term.name}.` : ""}`} width="wide">
       <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
         <Tile icon={MessageCircle} label="Recados" count={unreadCount} tint="var(--accent)" href="/mensagens" />
         <Tile icon={ClipboardList} label="Sondagens" count={count("assessment")} tint="var(--writing)" href="/sondagens" />
@@ -78,36 +80,7 @@ export default async function TodayPage() {
         <div className="min-w-0 space-y-10">
           <section aria-labelledby="para-hoje">
             <SectionTitle id="para-hoje">Para hoje</SectionTitle>
-            {d.items.length === 0 ? (
-              <p className="py-6 text-callout text-label-2">Tudo em dia. Que tal registrar algo bom que aconteceu hoje?</p>
-            ) : (
-              <ul className="-mx-5 md:mx-0">
-                {d.items.map((item, i) => (
-                  <li key={item.id}>
-                    <Link href={item.href} className="group flex items-start gap-3.5 pl-4 outline-none hover:bg-fill/40 focus-visible:bg-fill md:pl-0 md:hover:bg-transparent">
-                      {(() => {
-                        const Icon = itemIcon[item.kind];
-                        return (
-                          <span aria-hidden className="mt-[11px] flex size-[30px] shrink-0 items-center justify-center rounded-full text-white" style={{ background: item.tint }}>
-                            <Icon className="size-[16px]" strokeWidth={2.4} />
-                          </span>
-                        );
-                      })()}
-                      <span className={cn("flex min-w-0 flex-1 items-center gap-2 py-[11px] pr-4", i < d.items.length - 1 && "shadow-[inset_0_-0.5px_0_var(--separator)]")}>
-                        <span className="min-w-0 flex-1">
-                        <span className="block text-body">{item.title}</span>
-                        <span className="mt-0.5 block text-subhead text-label-2">
-                          {item.detail}
-                          {item.status && <span className="text-critical-ink"> – {item.status}</span>}
-                        </span>
-                        </span>
-                        <ChevronRight aria-hidden className="size-[15px] shrink-0 text-label-3/70" strokeWidth={2.6} />
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <TodayList items={d.items} />
             <HojeCompose />
           </section>
 

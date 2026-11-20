@@ -4,6 +4,7 @@ import { Plus, Users } from "lucide-react";
 import { requireRole } from "@/server/session";
 import { getClasses } from "@/server/queries/common";
 import { Page } from "@/components/ui/page";
+import { SearchButton } from "@/components/shell/search-button";
 import { Button } from "@/components/ui/button";
 import { EmptyState, SectionTitle } from "@/components/ui/misc";
 import { shiftLabels, stageLabels } from "@/lib/vocabulary";
@@ -22,7 +23,7 @@ export default async function ClassesPage() {
     <Page
       title="Turmas"
       subtitle={current.length ? `${current.length} ${current.length === 1 ? "turma" : "turmas"} em ${current[0].year}` : undefined}
-      actions={<Button size="sm" variant="tinted" icon={Plus} href="/turmas/nova">Nova turma</Button>}
+      actions={<span className="flex items-center gap-2"><SearchButton className="md:hidden" /><Button size="sm" variant="tinted" icon={Plus} href="/turmas/nova">Nova turma</Button></span>}
       width="wide"
     >
       {current.length === 0 ? (

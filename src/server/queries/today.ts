@@ -220,5 +220,13 @@ export async function getTeacherToday(ctx: SessionContext) {
     .orderBy(desc(schema.journalEntries.occurredOn), desc(schema.journalEntries.createdAt))
     .limit(4);
 
-  return { classes, term, items, unreadCount: unread.reduce((a, u) => a + u.n, 0), attention: attention.slice(0, 4), noRecords, upcoming: upcoming.slice(0, 6), recent };
+  // Itens adiados/ocultados pelo próprio usuário
+  const dism = await db
+    .select({ key: schema.dismissals.itemKey })
+    .from(schema.dismissals)
+    .where(and(eq(schema.dismissals.userId, ctx.user.id), gte(schema.dismissals.until, addDays(today, 1))));
+  const hidden = new Set(dism.map((d) => d.key));
+  const visibleItems = items.filter((i) => !hidden.has(i.id));
+
+  return { classes, term, items: visibleItems, unreadCount: unread.reduce((a, u) => a + u.n, 0), attention: attention.slice(0, 4), noRecords, upcoming: upcoming.slice(0, 6), recent };
 }

@@ -97,7 +97,7 @@ export function StudentActions({
 
   return (
     <>
-      <div className="grid w-full max-w-md grid-cols-3 gap-2">
+      <div className="grid w-full max-w-md grid-cols-3 gap-2 md:w-[300px]">
         <ActionTile icon={NotebookPen} label="Registrar" onClick={() => setRecord(true)} />
         <ActionTile icon={MessageSquareHeart} label="Feedback" onClick={() => setFeedback(true)} />
         <Menu

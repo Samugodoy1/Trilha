@@ -8,6 +8,7 @@ import { ALLOWED_UPLOAD_TYPES, MAX_UPLOAD_BYTES, putObject, sniffMime } from "@/
 import { requireRole } from "../session";
 import { assertClass, familyStudentIds, isUuid } from "../access";
 import { audit } from "../audit";
+import { trash } from "../trash";
 
 const taskSchema = z.object({
   classId: z.string().uuid(),
@@ -47,13 +48,35 @@ export async function createTaskAction(input: z.input<typeof taskSchema>): Promi
   return { ok: true, id: t.id };
 }
 
-export async function deleteTaskAction(id: string) {
+export type TaskSnapshot = { id: string };
+
+/** Apaga na hora; o "Desfazer" restaura a partir de uma cópia guardada no servidor por alguns minutos. */
+export async function deleteTaskAction(id: string): Promise<{ ok: boolean }> {
   const ctx = await requireRole("teacher");
-  if (!isUuid(id)) return;
+  if (!isUuid(id)) return { ok: false };
   const db = await getDb();
-  await db.delete(schema.tasks).where(and(eq(schema.tasks.id, id), eq(schema.tasks.authorId, ctx.user.id)));
+  const [task] = await db.select().from(schema.tasks).where(and(eq(schema.tasks.id, id), eq(schema.tasks.authorId, ctx.user.id)));
+  if (!task) return { ok: false };
+  const completions = await db.select().from(schema.taskCompletions).where(eq(schema.taskCompletions.taskId, id));
+  trash.set(`task:${ctx.user.id}:${id}`, { at: Date.now(), data: { task, completions } });
+  await db.delete(schema.tasks).where(eq(schema.tasks.id, id));
   await audit(ctx, "task.delete", "task", id);
   revalidatePath("/tarefas");
+  return { ok: true };
+}
+
+export async function restoreTaskAction(id: string): Promise<{ ok: boolean }> {
+  const ctx = await requireRole("teacher");
+  const key = `task:${ctx.user.id}:${id}`;
+  const item = trash.get(key) as { at: number; data: { task: typeof schema.tasks.$inferSelect; completions: (typeof schema.taskCompletions.$inferSelect)[] } } | undefined;
+  if (!item || Date.now() - item.at > 10 * 60_000) return { ok: false };
+  const db = await getDb();
+  await db.insert(schema.tasks).values(item.data.task).onConflictDoNothing();
+  if (item.data.completions.length) await db.insert(schema.taskCompletions).values(item.data.completions).onConflictDoNothing();
+  trash.delete(key);
+  await audit(ctx, "task.restore", "task", id);
+  revalidatePath("/tarefas");
+  return { ok: true };
 }
 
 /** Upload genérico (imagem ou PDF), ainda sem dono — vinculado ao salvar. */

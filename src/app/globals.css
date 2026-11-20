@@ -508,3 +508,52 @@
     max-width: none !important;
   }
 }
+
+/* ─────────────────────── Dynamic Type (iPhone e iPad) ───────────────────────
+   Em telas de toque com suporte a -apple-system-body, a base do texto passa a ser
+   o tamanho escolhido pela pessoa em Ajustes › Tela e Brilho › Tamanho do Texto
+   (17 pt no padrão). A escala segue as proporções do iOS; espaçamentos e raios
+   ficam em pixels para o layout não crescer junto com as letras. */
+@media (hover: none) and (pointer: coarse) {
+  @supports (font: -apple-system-body) {
+    html {
+      font: -apple-system-body;
+    }
+    :root {
+      --spacing: 4px;
+      --text-large-title: 2rem;
+      --text-large-title--line-height: 1.206;
+      --text-title-1: 1.647rem;
+      --text-title-1--line-height: 1.214;
+      --text-title-2: 1.294rem;
+      --text-title-2--line-height: 1.273;
+      --text-title-3: 1.176rem;
+      --text-title-3--line-height: 1.25;
+      --text-headline: 1rem;
+      --text-headline--line-height: 1.294;
+      --text-body: 1rem;
+      --text-body--line-height: 1.294;
+      --text-callout: 0.941rem;
+      --text-callout--line-height: 1.313;
+      --text-subhead: 0.882rem;
+      --text-subhead--line-height: 1.333;
+      --text-footnote: 0.765rem;
+      --text-footnote--line-height: 1.385;
+      --text-caption: 0.706rem;
+      --text-caption--line-height: 1.333;
+      --text-caption-2: 0.647rem;
+      --text-caption-2--line-height: 1.182;
+      --radius-xs: 6px;
+      --radius-sm: 8px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+      --radius-2xl: 24px;
+      --radius-3xl: 28px;
+    }
+    body {
+      font-family: var(--font-sans);
+      font-size: var(--text-body);
+    }
+  }
+}

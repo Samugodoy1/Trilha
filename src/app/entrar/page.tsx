@@ -18,7 +18,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <h1 className="text-title-1">Entrar no Trilha</h1>
           <p className="mt-2 text-callout text-label-2">Cada passo da aprendizagem, compartilhado entre escola e família.</p>
         </div>
-        <LoginForm next={next} />
+        <LoginForm next={next} showDemo={process.env.TRILHA_HIDE_DEMO !== "true"} />
       </div>
     </main>
   );

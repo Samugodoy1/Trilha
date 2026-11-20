@@ -8,7 +8,8 @@ import { Select, TextArea, TextField, Toggle } from "@/components/ui/fields";
 import { Sheet } from "@/components/ui/sheet";
 import { useToast } from "@/components/ui/toast";
 import { Spinner } from "@/components/ui/spinner";
-import { createTaskAction, deleteTaskAction, uploadFileAction } from "@/server/actions/tasks";
+import { createTaskAction, deleteTaskAction, restoreTaskAction, uploadFileAction } from "@/server/actions/tasks";
+import { SwipeRow } from "@/components/ui/swipe-row";
 import { formatRelativeDay, todayISO, addDays } from "@/lib/format";
 import { taskKinds } from "@/lib/vocabulary";
 import { cn } from "@/lib/cn";
@@ -76,10 +77,40 @@ export function TasksView({ upcoming, past, classes, openNew }: { upcoming: Row[
 
 function TaskRow({ r, last, past }: { r: Row; last: boolean; past: boolean }) {
   const [pending, start] = useTransition();
+  const [gone, setGone] = useState(false);
   const router = useRouter();
+  const toast = useToast();
   const today = todayISO();
+  const remove = () =>
+    start(async () => {
+      setGone(true);
+      const res = await deleteTaskAction(r.id);
+      if (!res.ok) {
+        setGone(false);
+        return toast({ title: "Não foi possível apagar", tone: "error" });
+      }
+      toast({
+        title: "Tarefa apagada",
+        description: "Ela também saiu da agenda das famílias.",
+        tone: "info",
+        action: {
+          label: "Desfazer",
+          onClick: async () => {
+            const back = await restoreTaskAction(r.id);
+            if (back.ok) {
+              setGone(false);
+              router.refresh();
+            } else toast({ title: "Não foi mais possível desfazer", tone: "error" });
+          },
+        },
+      });
+      router.refresh();
+    });
+  if (gone) return null;
   return (
-    <li className={cn("group flex items-start gap-3.5 pl-5 md:pl-0", pending && "opacity-50")}>
+    <li>
+      <SwipeRow label={r.title} actions={[{ label: "Apagar", icon: Trash2, tint: "var(--critical)", destructive: true, onAction: remove }]}>
+    <div className={cn("group flex items-start gap-3.5 pl-5 md:pl-0", pending && "opacity-50")}>
       <ProgressRing value={r.done} total={r.total} />
       <div className={cn("min-w-0 flex-1 py-[11px] pr-4", !last && "shadow-[inset_0_-0.5px_0_var(--separator)]")}>
         <div className="flex items-start gap-2">
@@ -87,7 +118,7 @@ function TaskRow({ r, last, past }: { r: Row; last: boolean; past: boolean }) {
           <button
             type="button"
             aria-label={`Apagar ${r.title}`}
-            onClick={() => start(async () => (await deleteTaskAction(r.id), router.refresh()))}
+            onClick={remove}
             className="rounded-full p-1 text-label-3 opacity-0 transition-opacity group-hover:opacity-100 hover:text-critical-ink focus:opacity-100"
           >
             <Trash2 className="size-4" />
@@ -109,6 +140,8 @@ function TaskRow({ r, last, past }: { r: Row; last: boolean; past: boolean }) {
           {r.links.length ? ` · ${r.links.length} link${r.links.length > 1 ? "s" : ""}` : ""}
         </p>
       </div>
+    </div>
+      </SwipeRow>
     </li>
   );
 }

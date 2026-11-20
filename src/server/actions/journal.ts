@@ -8,6 +8,7 @@ import { todayISO } from "@/lib/format";
 import { requireRole } from "../session";
 import { AccessDenied, accessibleClassIds, isUuid } from "../access";
 import { audit } from "../audit";
+import { trash } from "../trash";
 import { displayName } from "../queries/common";
 
 export type ComposeContext = {
@@ -119,15 +120,31 @@ export async function deleteEntryAction(id: string) {
   const ctx = await requireRole("teacher");
   if (!isUuid(id)) return { ok: false };
   const db = await getDb();
-  const res = await db
-    .delete(schema.journalEntries)
-    .where(and(eq(schema.journalEntries.id, id), eq(schema.journalEntries.authorId, ctx.user.id)))
-    .returning({ id: schema.journalEntries.id });
-  if (res.length) {
-    await audit(ctx, "journal.delete", "journal_entry", id);
-    revalidatePath("/", "layout");
-  }
-  return { ok: res.length > 0 };
+  const [entry] = await db.select().from(schema.journalEntries).where(and(eq(schema.journalEntries.id, id), eq(schema.journalEntries.authorId, ctx.user.id)));
+  if (!entry) return { ok: false };
+  const links = await db.select().from(schema.journalEntryStudents).where(eq(schema.journalEntryStudents.entryId, id));
+  trash.set(`entry:${ctx.user.id}:${id}`, { at: Date.now(), data: { entry, links } });
+  await db.delete(schema.journalEntries).where(eq(schema.journalEntries.id, id));
+  await audit(ctx, "journal.delete", "journal_entry", id);
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+/** Desfaz a exclusão (até 10 minutos depois), a partir da cópia guardada no servidor. */
+export async function restoreEntryAction(id: string) {
+  const ctx = await requireRole("teacher");
+  const key = `entry:${ctx.user.id}:${id}`;
+  const item = trash.get(key) as { at: number; data: { entry: typeof schema.journalEntries.$inferSelect; links: (typeof schema.journalEntryStudents.$inferSelect)[] } } | undefined;
+  if (!item || Date.now() - item.at > 10 * 60_000) return { ok: false };
+  const db = await getDb();
+  await db.transaction(async (tx) => {
+    await tx.insert(schema.journalEntries).values(item.data.entry).onConflictDoNothing();
+    if (item.data.links.length) await tx.insert(schema.journalEntryStudents).values(item.data.links).onConflictDoNothing();
+  });
+  trash.delete(key);
+  await audit(ctx, "journal.restore", "journal_entry", id);
+  revalidatePath("/", "layout");
+  return { ok: true };
 }
 
 export async function saveEntryTemplateAction(input: { name: string; kind: string; body: string }) {
