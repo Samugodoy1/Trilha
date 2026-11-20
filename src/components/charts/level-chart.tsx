@@ -139,7 +139,7 @@ export function LevelChart({
           <p className="text-label-2">{data[active].detail ?? data[active].xLabel}</p>
         </div>
       )}
-      <table className="sr-only">
+      <div className="sr-only"><table>
         <caption>{title}</caption>
         <thead>
           <tr>
@@ -155,7 +155,7 @@ export function LevelChart({
             </tr>
           ))}
         </tbody>
-      </table>
+      </table></div>
     </div>
   );
 }
@@ -213,7 +213,7 @@ export function BarChart({
           </span>
         ))}
       </div>
-      <table className="sr-only">
+      <div className="sr-only"><table>
         <caption>{title}</caption>
         <tbody>
           {data.map((d) => (
@@ -223,7 +223,7 @@ export function BarChart({
             </tr>
           ))}
         </tbody>
-      </table>
+      </table></div>
     </figure>
   );
 }

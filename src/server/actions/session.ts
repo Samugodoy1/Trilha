@@ -58,7 +58,7 @@ export async function loginAction(_: FormState, form: FormData): Promise<FormSta
   attempts.delete(key);
   await audit({ user, school: { id: membership.schoolId } }, "login", "user", user.id);
 
-  if (!membership.onboardedAt && membership.role === "teacher") redirect("/boas-vindas");
+  if (!membership.onboardedAt && (membership.role === "teacher" || membership.role === "guardian")) redirect("/boas-vindas");
   const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
   redirect(safeNext ?? homeFor(membership.role));
 }

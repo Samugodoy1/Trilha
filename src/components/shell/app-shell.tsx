@@ -72,9 +72,16 @@ export function AppShell(props: ShellProps) {
   }, [variant]);
 
   const tabItems = tabs.map((h) => nav.find((n) => n.href === h)!).filter(Boolean);
-  // Telefone: até 4 abas + "Mais" com o restante
-  // Telefone: 4 abas + "Mais" (sempre presente: dá acesso a Ajustes, troca de perfil e Sair)
-  const phoneTabs = tabItems.slice(0, 4);
+  // Telefone: poucas abas com rótulos que cabem inteiros, + "Mais" (sempre presente:
+  // dá acesso ao restante, a Ajustes, à troca de perfil e a Sair). Com o botão de
+  // registro ao lado, a professora fica com 3 abas + Mais, como no iOS.
+  const phoneOrder =
+    variant === "teacher"
+      ? ["/hoje", "/turmas", "/mensagens"]
+      : variant === "family"
+        ? ["/familia", "/familia/agenda", "/familia/desenvolvimento", "/familia/mensagens"]
+        : tabs.slice(0, 4);
+  const phoneTabs = phoneOrder.map((h) => nav.find((n) => n.href === h)!).filter(Boolean);
   const overflow = nav.filter((n) => !phoneTabs.includes(n));
 
   return (
@@ -231,7 +238,7 @@ export function AppShell(props: ShellProps) {
                   {active && (
                     <motion.span layoutId="ipad-tab" className="absolute inset-0 rounded-full bg-fill-2" transition={{ type: "spring", stiffness: 500, damping: 40 }} />
                   )}
-                  <span className="relative">{item.label}</span>
+                  <span className="relative max-w-full truncate px-0.5">{item.label}</span>
                   {item.badge ? <CountBadge count={item.badge} className="relative ml-1.5" /> : null}
                 </Link>
               );
@@ -255,8 +262,10 @@ export function AppShell(props: ShellProps) {
       <div className="md:pt-[56px] lg:pt-0 lg:pl-[272px] print:!p-0">{children}</div>
 
       {/* Telefone: barra de abas flutuante em vidro + ação de registro */}
-      <div className="no-print pointer-events-none fixed inset-x-0 bottom-0 z-40 flex items-end gap-2.5 px-3 pb-[max(env(safe-area-inset-bottom),10px)] md:hidden">
-        <nav aria-label="Abas" className="glass pointer-events-auto flex h-[62px] flex-1 items-center justify-around rounded-full px-1.5">
+      {/* Borda de rolagem: o conteúdo esmaece antes de passar sob a barra */}
+      <div aria-hidden className="no-print pointer-events-none fixed inset-x-0 bottom-0 z-30 h-[calc(max(env(safe-area-inset-bottom),12px)+84px)] backdrop-blur-[10px] [mask-image:linear-gradient(to_top,black_55%,transparent)] md:hidden" />
+      <div className="no-print pointer-events-none fixed inset-x-0 bottom-0 z-40 flex items-end gap-3 px-4 pb-[max(env(safe-area-inset-bottom),12px)] md:hidden">
+        <nav aria-label="Abas" className="glass pointer-events-auto flex h-[62px] min-w-0 flex-1 items-center rounded-full px-1">
           {phoneTabs.map((item) => {
             const Icon = navIcons[item.icon];
             const active = isActive(pathname, item);
@@ -266,7 +275,7 @@ export function AppShell(props: ShellProps) {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative flex h-[52px] flex-1 flex-col items-center justify-center gap-0.5 rounded-full text-[0.625rem] font-semibold outline-none",
+                  "relative flex h-[54px] min-w-0 flex-1 flex-col items-center justify-center gap-[3px] rounded-full text-[10px] leading-none font-semibold tracking-[0.01em] outline-none",
                   active ? "text-accent" : "text-label",
                 )}
               >
@@ -277,7 +286,7 @@ export function AppShell(props: ShellProps) {
                   <Icon aria-hidden className="size-[22px]" strokeWidth={active ? 2.3 : 1.9} />
                   {item.badge ? <CountBadge count={item.badge} className="absolute -top-1 -right-2.5" /> : null}
                 </span>
-                <span className="relative">{item.label}</span>
+                <span className="relative max-w-full truncate px-0.5">{item.label}</span>
               </Link>
             );
           })}
@@ -286,12 +295,15 @@ export function AppShell(props: ShellProps) {
               type="button"
               onClick={() => setMoreOpen(true)}
               className={cn(
-                "flex h-[52px] flex-1 flex-col items-center justify-center gap-0.5 rounded-full text-[0.625rem] font-semibold",
+                "relative flex h-[54px] min-w-0 flex-1 flex-col items-center justify-center gap-[3px] rounded-full text-[10px] leading-none font-semibold tracking-[0.01em] outline-none",
                 overflow.some((o) => isActive(pathname, o)) ? "text-accent" : "text-label",
               )}
             >
-              <Ellipsis aria-hidden className="size-[22px]" strokeWidth={2} />
-              Mais
+              {overflow.some((o) => isActive(pathname, o)) && (
+                <motion.span layoutId="phone-tab" className="absolute inset-0 rounded-full bg-fill" transition={{ type: "spring", stiffness: 500, damping: 40 }} />
+              )}
+              <Ellipsis aria-hidden className="relative size-[22px]" strokeWidth={2} />
+              <span className="relative">Mais</span>
             </button>
           )}
         </nav>

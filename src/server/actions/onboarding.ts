@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { and, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { getDb, schema } from "@/db";
-import { getAuthUser, switchMembership, getSession } from "../session";
+import { getAuthUser, switchMembership, getSession, homeFor } from "../session";
 import { audit } from "../audit";
 
 const LEVELS = (labels: [string, string, string][]) =>
@@ -108,5 +108,5 @@ export async function finishOnboardingAction() {
   const db = await getDb();
   await db.update(schema.memberships).set({ onboardedAt: new Date() }).where(and(eq(schema.memberships.userId, ctx.user.id), eq(schema.memberships.schoolId, ctx.school.id)));
   await audit(ctx, "onboarding.finish", "membership", ctx.membership.id);
-  redirect("/hoje");
+  return { ok: true as const, href: homeFor(ctx.membership.role) };
 }

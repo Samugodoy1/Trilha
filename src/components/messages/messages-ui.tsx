@@ -42,13 +42,13 @@ export function ConversationList({ items, base, selectedId, family }: { items: C
             <Link
               href={`${base}/${c.id}`}
               aria-current={active ? "page" : undefined}
-              className={cn("flex items-start gap-3 rounded-none py-0 pl-4 outline-none md:rounded-[12px] md:pl-2", active ? "bg-accent text-white md:bg-accent" : "hover:bg-fill/50")}
+              className={cn("flex items-start gap-3 rounded-none py-0 pl-5 outline-none md:rounded-[12px] md:pl-2", active ? "bg-accent text-white md:bg-accent" : "hover:bg-fill/50")}
             >
               <span className="relative mt-2.5">
                 {c.unread > 0 && !active && <span aria-label="Não lida" className="absolute top-1/2 -left-3 size-2.5 -translate-y-1/2 rounded-full bg-accent md:-left-2" />}
                 <Avatar name={c.otherName} hue={c.otherHue} size="md" />
               </span>
-              <span className={cn("min-w-0 flex-1 py-2.5 pr-4 md:pr-2", i < items.length - 1 && !active && "shadow-[inset_0_-0.5px_0_var(--separator)]")}>
+              <span className={cn("min-w-0 flex-1 py-2.5 pr-5 md:pr-2", i < items.length - 1 && !active && "shadow-[inset_0_-0.5px_0_var(--separator)]")}>
                 <span className="flex items-baseline justify-between gap-2">
                   <span className={cn("truncate text-callout font-semibold")}>{family ? c.otherName : `${c.otherName.split(" ")[0]} · ${c.studentName.split(" ")[0]}`}</span>
                   <span className={cn("shrink-0 text-footnote", active ? "text-white/80" : "text-label-2")}>{formatMessageStamp(c.lastAt)}</span>

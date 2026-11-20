@@ -86,7 +86,7 @@ export async function acceptInviteAction(input: z.input<typeof acceptSchema>): P
       .select()
       .from(schema.memberships)
       .where(and(eq(schema.memberships.userId, userId), eq(schema.memberships.schoolId, inv.schoolId), eq(schema.memberships.role, "guardian")));
-    if (!m) [m] = await tx.insert(schema.memberships).values({ userId, schoolId: inv.schoolId, role: "guardian", onboardedAt: new Date() }).returning();
+    if (!m) [m] = await tx.insert(schema.memberships).values({ userId, schoolId: inv.schoolId, role: "guardian" }).returning();
     const [link] = await tx.select().from(schema.guardianLinks).where(and(eq(schema.guardianLinks.userId, userId), eq(schema.guardianLinks.studentId, student.id), isNull(schema.guardianLinks.revokedAt)));
     if (!link)
       await tx.insert(schema.guardianLinks).values({ userId, studentId: student.id, relationship: inv.relationship ?? "Responsável", verifiedAt: new Date(), verifiedById: inv.createdById });
@@ -95,5 +95,5 @@ export async function acceptInviteAction(input: z.input<typeof acceptSchema>): P
   });
   await audit({ user: { id: userId }, school: { id: inv.schoolId } }, "invite.accept", "invitation", inv.id, { studentId: student.id });
   await createSession(userId, membershipId);
-  redirect("/familia");
+  redirect("/boas-vindas");
 }

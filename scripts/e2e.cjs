@@ -46,6 +46,14 @@ async function login(browser, email, viewport = { width: 1280, height: 860 }) {
 
   const { page: t } = await login(browser, "helena@trilha.demo");
   global.__shotPage = t;
+  if (process.env.DEBUG_NET) {
+    const T0 = Date.now();
+    t.on("request", (r) => r.method() === "POST" && console.log(`   [${Date.now() - T0}ms] → POST ${r.url().replace(BASE, "")}`));
+    t.on("requestfinished", async (r) => r.method() === "POST" && console.log(`   [${Date.now() - T0}ms] ← ${(await r.response())?.status()} ${r.url().replace(BASE, "")} ${JSON.stringify((await r.response())?.headers()["x-action-revalidated"] ?? "")}`));
+    t.on("requestfailed", (r) => console.log(`   [${Date.now() - T0}ms] ✗ ${r.method()} ${r.url().replace(BASE, "")} ${r.failure()?.errorText}`));
+    t.on("pageerror", (e) => console.log("   pageerror", e.message.slice(0, 200)));
+    t.on("console", (m) => m.type() === "error" && console.log("   console", m.text().slice(0, 200)));
+  }
 
   await step("1. Professora cria uma turma", async () => {
     await t.goto(`${BASE}/turmas/nova`, { waitUntil: "networkidle" });
@@ -148,7 +156,16 @@ async function login(browser, email, viewport = { width: 1280, height: 860 }) {
 
   await step("Convite aceito com a data correta", async () => {
     await f.getByLabel(/Data de nascimento de Clara/).fill("2016-05-10");
-    await Promise.all([f.waitForURL(`${BASE}/familia`), f.getByRole("button", { name: "Confirmar e entrar" }).click()]);
+    await Promise.all([f.waitForURL(`${BASE}/boas-vindas`), f.getByRole("button", { name: "Confirmar e entrar" }).click()]);
+  });
+
+  await step("Boas-vindas da família (primeiro acesso)", async () => {
+    await f.getByRole("heading", { name: "Olá, Rita" }).waitFor();
+    for (let n = 0; n < 4 && !(await f.getByRole("button", { name: "Ver a trilha de Clara" }).isVisible()); n++) {
+      await f.getByRole("button", { name: "Continuar" }).click();
+      await f.waitForTimeout(450);
+    }
+    await Promise.all([f.waitForURL(`${BASE}/familia`), f.getByRole("button", { name: "Ver a trilha de Clara" }).click()]);
   });
 
   await step("9. Professora compartilha um feedback individual", async () => {
@@ -255,6 +272,37 @@ async function login(browser, email, viewport = { width: 1280, height: 860 }) {
     expect((await status(marta, `/diario/${ids.privateEntry}`)) === 404, "coordenação leu registro privado");
     expect((await status(marta, `/diario/${ids.coordEntry}`)) === 200, "coordenação não leu registro compartilhado");
     expect((await status(marta, `/alunos/${ids.lucas}`)) === 200, "coordenação não abriu aluno da escola");
+  });
+
+  await step("Onboarding: nova professora configura escola, turma e alunos", async () => {
+    const o = await (await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, locale: "pt-BR", timezoneId: "America/Sao_Paulo" })).newPage();
+    o.setDefaultTimeout(30000);
+    await o.goto(`${BASE}/criar-conta`, { waitUntil: "networkidle" });
+    await o.getByLabel("Nome completo").fill("Laura Exemplo Teste");
+    await o.getByLabel("E-mail").fill(`prof${stamp}@exemplo.test`);
+    await o.getByLabel("Senha").fill("professora2026x");
+    await Promise.all([o.waitForURL(`${BASE}/boas-vindas`), o.getByRole("button", { name: "Continuar" }).click()]);
+    await o.getByRole("heading", { name: "Boas-vindas ao Trilha" }).waitFor();
+    await o.getByRole("button", { name: "Continuar" }).click();
+    await o.getByLabel("Nome da escola").fill(`EMEF Exemplo ${stamp}`);
+    await o.getByLabel("Cidade").fill("Campinas");
+    await o.getByRole("button", { name: "Continuar" }).click();
+    await o.getByRole("heading", { name: "Com quem você trabalha?" }).waitFor();
+    await o.getByRole("button", { name: "Continuar" }).click();
+    await o.getByRole("button", { name: "Criar 3º ano A" }).click();
+    await o.getByRole("heading", { name: "Seus alunos" }).waitFor();
+    await o.getByLabel("Lista de alunos").fill("Davi Exemplo Rocha\t04/04/2017\nEla Exemplo Prado\t11/11/2017");
+    await o.getByRole("button", { name: "Adicionar 2 alunos" }).click();
+    await o.getByRole("heading", { name: "Período letivo" }).waitFor();
+    await o.getByRole("button", { name: "Continuar" }).click();
+    await o.getByRole("textbox", { name: "Registro", exact: true }).fill("Primeiro dia: a turma desenhou o caminho de casa até a escola.");
+    await o.getByRole("button", { name: "Salvar registro" }).click();
+    for (let n = 0; n < 2 && !(await o.getByRole("heading", { name: "Tudo pronto, Laura" }).isVisible()); n++) {
+      await o.waitForTimeout(450);
+      if (await o.getByRole("button", { name: "Continuar" }).isVisible()) await o.getByRole("button", { name: "Continuar" }).click();
+    }
+    await o.getByText("2 alunos com histórico pronto").waitFor();
+    await Promise.all([o.waitForURL(`${BASE}/hoje`), o.getByRole("button", { name: "Começar a usar o Trilha" }).click()]);
   });
 
   await step("Sem sessão: redireciona para entrar e bloqueia arquivos", async () => {

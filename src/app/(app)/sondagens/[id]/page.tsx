@@ -17,7 +17,7 @@ export default async function RoundPage({ params }: { params: Promise<{ id: stri
   const meta = seriesMeta[d.template.kind];
   return (
     <Page
-      title={d.round.title}
+      title={d.round.title.replace(` — ${d.term.name}`, "")}
       back={{ href: `/turmas/${d.cls.id}?aba=sondagens`, label: d.cls.name }}
       eyebrow={
         <CategoryLabel icon={meta.icon} category={meta.category}>

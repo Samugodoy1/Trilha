@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Check } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Select, TextField } from "@/components/ui/fields";
 import { useToast } from "@/components/ui/toast";
@@ -29,6 +30,7 @@ export function NewRoundForm({
   const [date, setDate] = useState(todayISO());
   const [pending, start] = useTransition();
   const toast = useToast();
+  const router = useRouter();
   const tpl = templates.find((t) => t.id === templateId);
   const term = terms.find((t) => t.id === termId);
   const area = tpl ? (seriesMeta[tpl.kind].area === "Sondagem" || tpl.kind === "diagnostica" ? tpl.name : seriesMeta[tpl.kind].area) : "";
@@ -91,7 +93,8 @@ export function NewRoundForm({
         onClick={() =>
           start(async () => {
             const res = await createRoundAction({ classId, templateId, termId, title, appliedOn: date });
-            if (res && !res.ok) toast({ title: res.error, tone: "error" });
+            if (!res.ok) return toast({ title: res.error, tone: "error" });
+            router.push(`/sondagens/${res.id}`);
           })
         }
       >

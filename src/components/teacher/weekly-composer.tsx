@@ -297,12 +297,12 @@ export function WeeklyComposer({
         </>
       )}
 
-      <div className="flex gap-2">
-        <Button variant="gray" size="lg" className="flex-1" onClick={() => save(false)} disabled={saving || !title.trim()}>
-          Guardar rascunho
-        </Button>
-        <Button size="lg" className="flex-1" onClick={() => save(true)} loading={saving} disabled={!title.trim()}>
+      <div className="flex flex-col gap-2 sm:flex-row-reverse">
+        <Button size="lg" className="min-w-0 sm:flex-1" onClick={() => save(true)} loading={saving} disabled={!title.trim()}>
           Publicar para {recipients} {recipients === 1 ? "família" : "famílias"}
+        </Button>
+        <Button variant="gray" size="lg" className="min-w-0 sm:flex-1" onClick={() => save(false)} disabled={saving || !title.trim()}>
+          Guardar rascunho
         </Button>
       </div>
     </div>

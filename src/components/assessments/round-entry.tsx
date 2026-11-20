@@ -113,34 +113,38 @@ export function RoundEntry({
 
   return (
     <div className="space-y-5">
-      <div className="sticky top-[calc(env(safe-area-inset-top)+44px)] md:top-14 z-20 -mx-5 bg-canvas/90 px-5 py-3 backdrop-blur-xl md:-mx-8 md:px-8">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <div className="min-w-0 flex-1">
-            <div className="flex items-baseline gap-2">
-              <span className="font-rounded text-title-2 tabular">{done}</span>
-              <span className="text-subhead text-label-2">de {students.length} lançados</span>
-            </div>
-            <div className="mt-1.5 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-fill">
-              <div className="h-full rounded-full transition-[width] duration-500" style={{ width: `${(done / Math.max(1, students.length)) * 100}%`, background: color }} />
-            </div>
-          </div>
-          <SaveIndicator state={save} savedLabel="Salvo" />
-          {!readOnly && (
-            <label className="flex items-center gap-2 text-subhead">
-              <span className="text-label-2">Compartilhar com famílias</span>
-              <Toggle
-                checked={isShared}
-                label="Compartilhar com famílias"
-                onChange={async (v) => {
-                  setShared(v);
-                  await setRoundSharedAction(roundId, v);
-                  toast({ title: v ? "Visível para as famílias" : "Somente para a escola", description: v ? "Cada família vê apenas o resultado do próprio filho, com explicação em linguagem simples." : undefined });
-                }}
-              />
-            </label>
-          )}
+      <div className="sticky top-[calc(env(safe-area-inset-top)+44px)] z-20 -mx-5 bg-canvas/90 px-5 py-3 backdrop-blur-xl md:top-14 md:-mx-8 md:px-8">
+        <div className="flex items-center justify-between gap-3">
+          <p className="flex min-w-0 items-baseline gap-1.5">
+            <span className="font-rounded text-title-2 tabular">{done}</span>
+            <span className="truncate text-subhead text-label-2">de {students.length} lançados</span>
+          </p>
+          <span className="shrink-0">
+            <SaveIndicator state={save} savedLabel="Salvo" />
+          </span>
+        </div>
+        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-fill md:max-w-md">
+          <div className="h-full rounded-full transition-[width] duration-500" style={{ width: `${(done / Math.max(1, students.length)) * 100}%`, background: color }} />
         </div>
       </div>
+
+      {!readOnly && (
+        <label className="flex cursor-pointer items-center justify-between gap-4 rounded-xl bg-surface px-4 py-3 shadow-e1">
+          <span className="min-w-0">
+            <span className="block text-body">Compartilhar com famílias</span>
+            <span className="block text-footnote text-label-2">Cada família vê só o resultado do próprio filho.</span>
+          </span>
+          <Toggle
+            checked={isShared}
+            label="Compartilhar com famílias"
+            onChange={async (v) => {
+              setShared(v);
+              await setRoundSharedAction(roundId, v);
+              toast({ title: v ? "Visível para as famílias" : "Somente para a escola", description: v ? "Cada família vê apenas o resultado do próprio filho, com explicação em linguagem simples." : undefined });
+            }}
+          />
+        </label>
+      )}
 
       <Disclosure summary="O que significa cada nível">
         <dl className="grid gap-2 sm:grid-cols-2">

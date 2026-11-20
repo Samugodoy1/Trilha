@@ -18,7 +18,7 @@ const roundSchema = z.object({
   appliedOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 });
 
-export async function createRoundAction(input: z.input<typeof roundSchema>): Promise<{ ok: false; error: string }> {
+export async function createRoundAction(input: z.input<typeof roundSchema>): Promise<{ ok: false; error: string } | { ok: true; id: string }> {
   const ctx = await requireRole("teacher");
   const parsed = roundSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "Preencha turma, modelo, bimestre e data." };
@@ -39,7 +39,9 @@ export async function createRoundAction(input: z.input<typeof roundSchema>): Pro
     .returning();
   await audit(ctx, "assessment.round.create", "assessment_round", round.id);
   revalidatePath("/hoje");
-  redirect(`/sondagens/${round.id}`);
+  // A navegação fica com o cliente (router.push): o redirect de uma ação às vezes
+  // se perde no roteador do Next quando há uma pré-busca em andamento.
+  return { ok: true as const, id: round.id };
 }
 
 async function assertRound(roundId: string) {
