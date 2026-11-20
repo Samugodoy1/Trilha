@@ -47,7 +47,7 @@ function CodeBlock({ code, text, url }: { code: string; text: string; url: strin
 
 /* ───────────────────────── Equipe da escola ───────────────────────── */
 
-export function TeamInviteSheet({ open, onClose, defaultRole = "teacher", onCreated }: { open: boolean; onClose: () => void; defaultRole?: "teacher" | "coordinator"; onCreated?: () => void }) {
+export function TeamInviteSheet({ open, onClose, defaultRole = "teacher", onCreated, allowCoordinator = true }: { open: boolean; onClose: () => void; defaultRole?: "teacher" | "coordinator"; onCreated?: () => void; allowCoordinator?: boolean }) {
   const [role, setRole] = useState<"teacher" | "coordinator">(defaultRole);
   const [name, setName] = useState("");
   const [result, setResult] = useState<{ code: string; expiresAt: string; school: string } | null>(null);
@@ -55,8 +55,8 @@ export function TeamInviteSheet({ open, onClose, defaultRole = "teacher", onCrea
   const toast = useToast();
   const router = useRouter();
   useEffect(() => {
-    if (open) setRole(defaultRole);
-  }, [open, defaultRole]);
+    if (open) setRole(allowCoordinator ? defaultRole : "teacher");
+  }, [open, defaultRole, allowCoordinator]);
   const who = role === "teacher" ? "professor(a)" : "coordenação";
 
   return (
@@ -69,11 +69,12 @@ export function TeamInviteSheet({ open, onClose, defaultRole = "teacher", onCrea
           setName("");
         }, 300);
       }}
-      title={result ? "Convite pronto" : "Convidar para a equipe"}
+      title={result ? "Convite pronto" : allowCoordinator ? "Convidar para a equipe" : "Convidar um colega"}
       size="sm"
     >
       {!result ? (
         <div className="space-y-5">
+          {allowCoordinator ? (
           <SegmentedControl
             label="Função"
             value={role}
@@ -83,6 +84,9 @@ export function TeamInviteSheet({ open, onClose, defaultRole = "teacher", onCrea
               { value: "coordinator", label: "Coordenação" },
             ]}
           />
+          ) : (
+            <p className="text-callout text-label-2">Chame um colega professor para usar o Trilha na sua escola. Ele cria as próprias turmas; nada do que é seu fica visível para ele.</p>
+          )}
           <TextField label="Nome (opcional)" value={name} onChange={(e) => setName(e.target.value)} placeholder="Para você lembrar a quem enviou" />
           <p className="text-footnote text-label-2">
             {role === "coordinator"
@@ -123,7 +127,7 @@ export function TeamInviteSheet({ open, onClose, defaultRole = "teacher", onCrea
   );
 }
 
-export function TeamInviteButton({ role = "teacher", label = "Convidar", variant = "tinted" }: { role?: "teacher" | "coordinator"; label?: string; variant?: "tinted" | "row" }) {
+export function TeamInviteButton({ role = "teacher", label = "Convidar", variant = "tinted", allowCoordinator = true }: { role?: "teacher" | "coordinator"; label?: string; variant?: "tinted" | "row"; allowCoordinator?: boolean }) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -139,7 +143,7 @@ export function TeamInviteButton({ role = "teacher", label = "Convidar", variant
           {label}
         </Button>
       )}
-      <TeamInviteSheet open={open} onClose={() => setOpen(false)} defaultRole={role} />
+      <TeamInviteSheet open={open} onClose={() => setOpen(false)} defaultRole={role} allowCoordinator={allowCoordinator} />
     </>
   );
 }

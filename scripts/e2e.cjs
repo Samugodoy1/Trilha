@@ -336,6 +336,52 @@ async function login(browser, email, viewport = { width: 1280, height: 860 }) {
     expect(codes.length >= 1 && codes.every((x) => /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(x.trim())), `códigos: ${codes}`);
   });
 
+  await step("Professora convida um colega; coordenação desativa quando ele sai", async () => {
+    // 1. Helena (professora, sem cargo de gestão) convida um colega professor
+    await t.goto(`${BASE}/equipe`, { waitUntil: "networkidle" });
+    await t.getByRole("button", { name: "Convidar um colega" }).click();
+    await t.getByRole("button", { name: "Gerar convite" }).click();
+    const code = (await t.locator("p.font-mono").first().innerText()).trim();
+    await t.keyboard.press("Escape");
+    // 2. O colega entra pelo código e cria a própria turma (sem mexer no calendário da escola)
+    const pc = await (await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, locale: "pt-BR", timezoneId: "America/Sao_Paulo" })).newPage();
+    pc.setDefaultTimeout(30000);
+    await pc.goto(`${BASE}/convite?codigo=${code}`, { waitUntil: "networkidle" });
+    await pc.getByRole("button", { name: "Continuar" }).click();
+    await pc.getByRole("heading", { name: "Entrar como professor(a)" }).waitFor();
+    await pc.getByLabel("Seu nome").fill(`Pedro Colega ${stamp}`);
+    await pc.getByLabel("E-mail").fill(`pedro${stamp}@exemplo.test`);
+    await pc.getByLabel("Senha").fill("pedrocolega2026");
+    await Promise.all([pc.waitForURL(`${BASE}/boas-vindas`), pc.getByRole("button", { name: "Confirmar e entrar" }).click()]);
+    await pc.getByRole("button", { name: "Continuar" }).click();
+    await pc.getByRole("heading", { name: "Com quem você trabalha?" }).waitFor();
+    await pc.getByRole("button", { name: "Continuar" }).click();
+    await pc.getByRole("textbox", { name: "Turma" }).fill("P");
+    await pc.getByRole("button", { name: "Criar 3º ano P" }).click();
+    await pc.getByRole("button", { name: "Adicionar depois" }).click();
+    expect(!(await pc.getByRole("heading", { name: "Período letivo" }).isVisible()), "professor convidado não deve redefinir o calendário");
+    await pc.getByRole("button", { name: "Agora não" }).click();
+    for (let n = 0; n < 2 && !(await pc.getByRole("button", { name: "Começar a usar o Trilha" }).isVisible()); n++) {
+      await pc.waitForTimeout(450);
+      if (await pc.getByRole("button", { name: "Continuar" }).isVisible()) await pc.getByRole("button", { name: "Continuar" }).click();
+    }
+    await Promise.all([pc.waitForURL(`${BASE}/hoje`), pc.getByRole("button", { name: "Começar a usar o Trilha" }).click()]);
+    // 3. A coordenação desativa o acesso e passa a turma para a Helena
+    const { page: mk } = await login(browser, "marta@trilha.demo", { width: 390, height: 844 });
+    await mk.goto(`${BASE}/equipe`, { waitUntil: "networkidle" });
+    await mk.getByRole("button", { name: new RegExp(`Pedro Colega ${stamp}`) }).click();
+    await mk.getByRole("button", { name: "Desativar acesso" }).click();
+    await mk.getByLabel(/As turmas de Pedro/).selectOption({ label: "Helena Prado" });
+    await mk.getByRole("button", { name: "Desativar acesso de Pedro" }).click();
+    await mk.getByText("Acesso de Pedro desativado").waitFor();
+    // 4. Ele perde o acesso na hora; a turma e as conversas ficam com a Helena
+    await pc.goto(`${BASE}/hoje`, { waitUntil: "networkidle" });
+    expect(new URL(pc.url()).pathname === "/entrar", "sessão do professor desativado continuou valendo");
+    const owner = sql(`select u.email from teaching_assignments a join users u on u.id=a.user_id join classes c on c.id=a.class_id where c.name='3º ano P' order by a.created_at desc limit 1`);
+    expect(owner === "helena@trilha.demo", `turma deveria ir para a Helena, foi para ${owner}`);
+    await mk.getByRole("button", { name: new RegExp(`Pedro Colega ${stamp}`) }).waitFor();
+  });
+
   await step("Sem sessão: redireciona para entrar e bloqueia arquivos", async () => {
     const anon = await (await browser.newContext()).newPage();
     await anon.goto(`${BASE}/hoje`, { waitUntil: "networkidle" });

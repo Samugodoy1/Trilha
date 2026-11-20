@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { and, desc, eq, isNull } from "drizzle-orm";
-import { Clock, Eye, KeyRound, Lock, ShieldCheck, Sparkles, Users } from "lucide-react";
+import { Eye, KeyRound, Lock, ShieldCheck, Sparkles, Users } from "lucide-react";
 import { getDb, schema } from "@/db";
 import { requireSession } from "@/server/session";
 import { isFamily, isStaff } from "@/server/access";
-import { canManageTeam, getTeam } from "@/server/team";
-import { RevokeStaffInviteButton, TeamInviteButton } from "@/components/invites/invite-ui";
+import { getTeam } from "@/server/team";
 import { Page } from "@/components/ui/page";
 import { Avatar } from "@/components/ui/avatar";
 import { ListRow, ListSection } from "@/components/ui/list";
@@ -23,10 +22,7 @@ export default async function SettingsPage() {
   const [school] = await db.select().from(schema.schools).where(eq(schema.schools.id, ctx.school.id));
   const staff = isStaff(ctx);
   const family = isFamily(ctx);
-  const manage = !family && (await canManageTeam(ctx));
-  const team = family ? null : await getTeam(ctx);
-  const coordinators = team?.people.filter((p) => p.roles.includes("coordinator")) ?? [];
-  const roleText = (roles: string[]) => [...new Set(roles)].map((r) => (r === "teacher" ? "Professor(a)" : r === "coordinator" ? "Coordenação" : "Gestão")).join(" · ");
+  const teamCount = family ? 0 : (await getTeam(ctx)).active.length;
   const members = ctx.membership.role === "admin"
     ? await db
         .select({ id: schema.memberships.id, role: schema.memberships.role, name: schema.users.name, hue: schema.users.hue, userId: schema.users.id })
@@ -81,32 +77,9 @@ export default async function SettingsPage() {
             <ListRow icon={Sparkles} iconTint="var(--notes)" title="Assistente" subtitle={school.aiEnabled ? "Rascunhos com Claude, nomes ocultados antes do envio, sempre revisados por você" : "Rascunhos compostos localmente — nada sai da escola"} multiline />
           </ListSection>
 
-          {team && (
-            <ListSection
-              variant="inset"
-              header={<span className="text-footnote font-normal text-label-2 uppercase">Equipe da escola</span>}
-              footer={
-                manage
-                  ? "Cada convite gera um código de uso único, válido por 14 dias. A coordenação vê apenas o que cada professor decidir compartilhar."
-                  : coordinators.length
-                    ? "A coordenação acompanha as turmas da escola, mas só vê os registros que você compartilhar."
-                    : "Sua escola ainda não tem coordenação no Trilha. Quem cuida da gestão pode convidar por aqui."
-              }
-            >
-              {ctx.membership.role !== "admin" &&
-                team.people.map((m) => <ListRow key={m.userId} leading={<Avatar name={m.name} hue={m.hue} size="sm" />} title={m.userId === ctx.user.id ? `${m.name} (você)` : m.name} subtitle={roleText(m.roles)} />)}
-              {manage &&
-                team.pending.map((i) => (
-                  <ListRow
-                    key={i.id}
-                    icon={Clock}
-                    iconTint="var(--warning)"
-                    title={`${i.recipientName || (i.role === "teacher" ? "Professor(a)" : "Coordenação")} · convite enviado`}
-                    subtitle={`Código terminado em ${i.codeHint} · vale até ${i.expiresAt.toLocaleDateString("pt-BR")}`}
-                    trailing={<RevokeStaffInviteButton id={i.id} />}
-                  />
-                ))}
-              {manage && <TeamInviteButton variant="row" role={ctx.membership.role === "coordinator" ? "teacher" : coordinators.length ? "teacher" : "coordinator"} label="Convidar professor ou coordenação" />}
+          {!family && (
+            <ListSection variant="inset" header={<span className="text-footnote font-normal text-label-2 uppercase">Escola</span>}>
+              <ListRow icon={Users} iconTint="var(--accent)" title="Equipe da escola" subtitle={`${teamCount} ${teamCount === 1 ? "pessoa" : "pessoas"} · convide colegas`} href="/equipe" chevron />
               <ListRow icon={KeyRound} iconTint="#8e8e93" title="Tenho um código de convite" subtitle="Para entrar na equipe de outra escola" href="/convite" chevron />
             </ListSection>
           )}

@@ -184,7 +184,17 @@ export function Wizard({ firstName, hasSchool: hasSchoolAtStart, schoolName }: {
                 <TextField label="Nome da escola" value={school.name} onChange={(e) => setSchool({ ...school, name: e.target.value })} placeholder="Ex.: EMEF Jardim das Flores" />
                 <div className="grid grid-cols-[minmax(0,1fr)_88px] gap-3">
                   <TextField label="Cidade" value={school.city} onChange={(e) => setSchool({ ...school, city: e.target.value })} />
-                  <TextField label="UF" value={school.state} maxLength={2} onChange={(e) => setSchool({ ...school, state: e.target.value.toUpperCase() })} />
+                  <TextField
+                    label="UF"
+                    value={school.state}
+                    maxLength={2}
+                    onChange={(e) =>
+                      setSchool({
+                        ...school,
+                        state: e.target.value.toUpperCase(),
+                      })
+                    }
+                  />
                 </div>
               </div>
             ),
@@ -192,7 +202,11 @@ export function Wizard({ firstName, hasSchool: hasSchoolAtStart, schoolName }: {
               label: "Continuar",
               loading: pending,
               disabled: school.name.trim().length < 3 || school.city.trim().length < 2,
-              onClick: () => run(async () => { const r = await createSchoolAction(school); return r.ok ? true : fail(r.error); }),
+              onClick: () =>
+                run(async () => {
+                  const r = await createSchoolAction(school);
+                  return r.ok ? true : fail(r.error);
+                }),
             },
           } satisfies Step,
         ]
@@ -249,7 +263,15 @@ export function Wizard({ firstName, hasSchool: hasSchoolAtStart, schoolName }: {
             )}
             <TextField label="Turma" value={letter} maxLength={3} onChange={(e) => setLetter(e.target.value.toUpperCase())} />
           </div>
-          <SegmentedControl label="Turno" value={shift} onChange={setShift} options={Object.entries(shiftLabels).map(([value, label]) => ({ value: value as keyof typeof shiftLabels, label }))} />
+          <SegmentedControl
+            label="Turno"
+            value={shift}
+            onChange={setShift}
+            options={Object.entries(shiftLabels).map(([value, label]) => ({
+              value: value as keyof typeof shiftLabels,
+              label,
+            }))}
+          />
         </div>
       ),
       primary: {
@@ -260,7 +282,12 @@ export function Wizard({ firstName, hasSchool: hasSchoolAtStart, schoolName }: {
           classId
             ? next()
             : run(async () => {
-                const r = await createClassAction({ name: className_, stage, grade, shift });
+                const r = await createClassAction({
+                  name: className_,
+                  stage,
+                  grade,
+                  shift,
+                });
                 if (!r.ok) return fail(r.error);
                 setClassId(r.id);
                 setClassName(className_);
@@ -275,7 +302,13 @@ export function Wizard({ firstName, hasSchool: hasSchoolAtStart, schoolName }: {
       description: "Cole a lista da secretaria ou da planilha, um nome por linha. A data de nascimento ajuda a confirmar as famílias.",
       body: (
         <div>
-          <TextArea value={roster} onChange={(e) => setRoster(e.target.value)} rows={7} placeholder={"Ana Beatriz Souza\t12/03/2017\nBruno Henrique Lima\t02/08/2017"} aria-label="Lista de alunos" />
+          <TextArea
+            value={roster}
+            onChange={(e) => setRoster(e.target.value)}
+            rows={7}
+            placeholder={"Ana Beatriz Souza\t12/03/2017\nBruno Henrique Lima\t02/08/2017"}
+            aria-label="Lista de alunos"
+          />
           <p className="mt-2 px-1 text-footnote text-label-2" aria-live="polite">
             {parsed.rows.length ? `${parsed.rows.length} ${parsed.rows.length === 1 ? "aluno reconhecido" : "alunos reconhecidos"}` : "Nomes com ou sem data de nascimento."}
           </p>
@@ -293,29 +326,53 @@ export function Wizard({ firstName, hasSchool: hasSchoolAtStart, schoolName }: {
             setRoster("");
           }),
       },
-      secondary: { label: studentsAdded ? "Continuar" : "Adicionar depois", onClick: next },
-    },
-    {
-      key: "terms",
-      icon: CalendarRange,
-      tint: GREEN,
-      title: "Período letivo",
-      description: "Como a sua escola divide o ano?",
-      body: (
-        <div className="space-y-4">
-          <SegmentedControl label="Divisão" value={structure} onChange={setStructure} options={[{ value: "bimestre", label: "Bimestres" }, { value: "trimestre", label: "Trimestres" }]} />
-          <div className="grid grid-cols-2 gap-3">
-            <TextField label="Início das aulas" type="date" value={startsOn} onChange={(e) => setStartsOn(e.target.value)} />
-            <TextField label="Fim das aulas" type="date" value={endsOn} onChange={(e) => setEndsOn(e.target.value)} />
-          </div>
-        </div>
-      ),
-      primary: {
-        label: "Continuar",
-        loading: pending,
-        onClick: () => run(async () => { const r = await configureTermsAction({ structure, startsOn, endsOn }); return r.ok ? true : fail(r.error ?? "Confira as datas."); }),
+      secondary: {
+        label: studentsAdded ? "Continuar" : "Adicionar depois",
+        onClick: next,
       },
     },
+    // O calendário é da escola: só quem cadastra a escola define. Professor convidado pula.
+    ...(!hasSchool
+      ? [
+          {
+            key: "terms",
+            icon: CalendarRange,
+            tint: GREEN,
+            title: "Período letivo",
+            description: "Como a sua escola divide o ano?",
+            body: (
+              <div className="space-y-4">
+                <SegmentedControl
+                  label="Divisão"
+                  value={structure}
+                  onChange={setStructure}
+                  options={[
+                    { value: "bimestre", label: "Bimestres" },
+                    { value: "trimestre", label: "Trimestres" },
+                  ]}
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <TextField label="Início das aulas" type="date" value={startsOn} onChange={(e) => setStartsOn(e.target.value)} />
+                  <TextField label="Fim das aulas" type="date" value={endsOn} onChange={(e) => setEndsOn(e.target.value)} />
+                </div>
+              </div>
+            ),
+            primary: {
+              label: "Continuar",
+              loading: pending,
+              onClick: () =>
+                run(async () => {
+                  const r = await configureTermsAction({
+                    structure,
+                    startsOn,
+                    endsOn,
+                  });
+                  return r.ok ? true : fail(r.error ?? "Confira as datas.");
+                }),
+            },
+          } satisfies Step,
+        ]
+      : []),
     ...(!hasSchool
       ? [
           {
@@ -324,10 +381,11 @@ export function Wizard({ firstName, hasSchool: hasSchoolAtStart, schoolName }: {
             tint: INDIGO,
             title: "Convide a coordenação",
             description: "Mande um código para a coordenação da sua escola entrar no Trilha. Ela acompanha as turmas, mas só vê o que você compartilhar.",
-            body: (
-              <Summary items={["Seus registros continuam privados", "Você escolhe o que compartilhar, um a um", "Você pode convidar outros professores depois, em Ajustes"]} />
-            ),
-            primary: { label: invitedCoord ? "Continuar" : "Convidar coordenação", onClick: () => (invitedCoord ? next() : setTeamOpen(true)) },
+            body: <Summary items={["Seus registros continuam privados", "Você escolhe o que compartilhar, um a um", "Você pode convidar outros professores depois, em Ajustes"]} />,
+            primary: {
+              label: invitedCoord ? "Continuar" : "Convidar coordenação",
+              onClick: () => (invitedCoord ? next() : setTeamOpen(true)),
+            },
             secondary: invitedCoord ? undefined : { label: "Agora não", onClick: next },
           } satisfies Step,
         ]
@@ -338,7 +396,15 @@ export function Wizard({ firstName, hasSchool: hasSchoolAtStart, schoolName }: {
       tint: ORANGE,
       title: "Seu primeiro registro",
       description: "O que aconteceu na aula de hoje? Fica privado: só você vê.",
-      body: <TextArea value={firstNote} onChange={(e) => setFirstNote(e.target.value)} rows={5} placeholder="Ex.: A turma conversou sobre as férias e montou um mural com os lugares que visitaram." aria-label="Registro" />,
+      body: (
+        <TextArea
+          value={firstNote}
+          onChange={(e) => setFirstNote(e.target.value)}
+          rows={5}
+          placeholder="Ex.: A turma conversou sobre as férias e montou um mural com os lugares que visitaram."
+          aria-label="Registro"
+        />
+      ),
       primary: {
         label: "Salvar registro",
         loading: pending,
@@ -346,7 +412,16 @@ export function Wizard({ firstName, hasSchool: hasSchoolAtStart, schoolName }: {
         onClick: () =>
           run(async () => {
             if (!classId) return true;
-            const r = await saveEntryAction({ classId, studentIds: [], kind: "atividade", title: "", body: firstNote, visibility: "private", occurredOn: todayISO(), isDraft: false });
+            const r = await saveEntryAction({
+              classId,
+              studentIds: [],
+              kind: "atividade",
+              title: "",
+              body: firstNote,
+              visibility: "private",
+              occurredOn: todayISO(),
+              isDraft: false,
+            });
             if (!r.ok) return fail(r.error);
             setNoteSaved(true);
           }),
@@ -377,26 +452,28 @@ export function Wizard({ firstName, hasSchool: hasSchoolAtStart, schoolName }: {
           items={[
             ...(className ? [`Turma ${className} criada`] : []),
             ...(studentsAdded ? [`${studentsAdded} ${studentsAdded === 1 ? "aluno com histórico pronto" : "alunos com histórico pronto"}`] : []),
-            `Ano dividido em ${structure === "bimestre" ? "bimestres" : "trimestres"}`,
+            ...(!hasSchool ? [`Ano dividido em ${structure === "bimestre" ? "bimestres" : "trimestres"}`] : []),
             ...(noteSaved ? ["Primeiro registro guardado"] : []),
           ]}
         />
       ),
-      primary: { label: "Começar a usar o Trilha", loading: pending, onClick: () => start(finish) },
+      primary: {
+        label: "Começar a usar o Trilha",
+        loading: pending,
+        onClick: () => start(finish),
+      },
     },
   ];
 
   stepsRef.current = steps;
-  const index = Math.max(0, steps.findIndex((x) => x.key === cur));
+  const index = Math.max(
+    0,
+    steps.findIndex((x) => x.key === cur),
+  );
   return (
     <>
       <OnboardingFlow steps={steps} index={index} onBack={() => setCur(steps[Math.max(0, index - 1)].key)} />
-      <TeamInviteSheet
-        open={teamOpen}
-        defaultRole="coordinator"
-        onClose={() => setTeamOpen(false)}
-        onCreated={() => setInvitedCoord(true)}
-      />
+      <TeamInviteSheet open={teamOpen} defaultRole="coordinator" onClose={() => setTeamOpen(false)} onCreated={() => setInvitedCoord(true)} />
     </>
   );
 }
@@ -438,11 +515,7 @@ export function FamilyWelcome({ firstName, childName, schoolName }: { firstName:
       tint: GREEN,
       title: "Feito para proteger seu filho",
       description: "A escola escolhe com cuidado o que compartilhar.",
-      body: (
-        <Summary
-          items={[`Você vê apenas o que é sobre ${child}`, "Nada de rankings ou comparações entre crianças", "Fotos e documentos ficam protegidos e privados"]}
-        />
-      ),
+      body: <Summary items={[`Você vê apenas o que é sobre ${child}`, "Nada de rankings ou comparações entre crianças", "Fotos e documentos ficam protegidos e privados"]} />,
       primary: { label: "Continuar", onClick: next },
     },
     ...(canInstall
@@ -464,11 +537,18 @@ export function FamilyWelcome({ firstName, childName, schoolName }: { firstName:
       hero: <DoneHero />,
       title: "Tudo pronto",
       description: `Sempre que a escola compartilhar algo sobre ${child}, aparece no Início.`,
-      primary: { label: `Ver a trilha de ${child}`, loading: pending, onClick: () => start(finish) },
+      primary: {
+        label: `Ver a trilha de ${child}`,
+        loading: pending,
+        onClick: () => start(finish),
+      },
     },
   ];
 
   stepsRef.current = steps;
-  const index = Math.max(0, steps.findIndex((x) => x.key === cur));
+  const index = Math.max(
+    0,
+    steps.findIndex((x) => x.key === cur),
+  );
   return <OnboardingFlow steps={steps} index={index} onBack={() => setCur(steps[Math.max(0, index - 1)].key)} />;
 }

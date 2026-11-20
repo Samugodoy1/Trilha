@@ -90,8 +90,9 @@ export async function buildShell(ctx: SessionContext): Promise<Omit<ShellProps, 
       { href: "/sondagens", label: "Sondagens", icon: "assessments" },
       { href: "/coordenacao/orientacoes", label: "Orientações", icon: "journal" },
       { href: "/coordenacao/conselho", label: "Conselho de classe", icon: "reports" },
+      { href: "/equipe", label: "Equipe", icon: "team" },
     ];
-    return { variant: "staff", nav, tabs: nav.map((n) => n.href), user, school, memberships };
+    return { variant: "staff", nav, tabs: nav.slice(0, 5).map((n) => n.href), user, school, memberships };
   }
 
   const classes = await getClasses(ctx);
@@ -104,6 +105,7 @@ export async function buildShell(ctx: SessionContext): Promise<Omit<ShellProps, 
     { href: "/sondagens", label: "Sondagens", icon: "assessments" },
     { href: "/tarefas", label: "Tarefas", icon: "tasks" },
     { href: "/relatorios", label: "Relatórios", icon: "reports" },
+    { href: "/equipe", label: "Equipe", icon: "team" },
   ];
   return {
     variant: "teacher",

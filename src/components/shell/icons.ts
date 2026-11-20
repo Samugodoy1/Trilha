@@ -13,6 +13,7 @@ import {
   Sparkles,
   Sun,
   Users,
+  UsersRound,
   Images,
   HeartHandshake,
   type LucideIcon,
@@ -36,6 +37,7 @@ export const navIcons = {
   portfolio: Images,
   sparkles: Sparkles,
   family: HeartHandshake,
+  team: UsersRound,
 } satisfies Record<string, LucideIcon>;
 
 export type NavIconName = keyof typeof navIcons;

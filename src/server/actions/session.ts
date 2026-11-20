@@ -50,7 +50,14 @@ export async function loginAction(_: FormState, form: FormData): Promise<FormSta
     .select()
     .from(schema.memberships)
     .where(and(eq(schema.memberships.userId, user.id), isNull(schema.memberships.revokedAt)));
-  if (mems.length === 0) return { error: "Sua conta ainda não está vinculada a nenhuma escola." };
+  if (mems.length === 0) {
+    const [old] = await db.select({ id: schema.memberships.id }).from(schema.memberships).where(eq(schema.memberships.userId, user.id)).limit(1);
+    return {
+      error: old
+        ? "Seu acesso à escola foi desativado. Se você mudou de escola, entre com o código de convite da nova escola em “Recebi um convite da escola”."
+        : "Sua conta ainda não está vinculada a nenhuma escola.",
+    };
+  }
   // Prioriza o papel pedagógico quando houver mais de um
   const order = ["teacher", "coordinator", "admin", "guardian", "student"];
   const membership = [...mems].sort((a, b) => order.indexOf(a.role) - order.indexOf(b.role))[0];
