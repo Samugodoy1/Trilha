@@ -121,6 +121,7 @@ export async function getTeacherToday(ctx: SessionContext) {
   // Alunos para acompanhar (sinais nos registros, nunca rótulos)
   const attention: AttentionItem[] = [];
   const noRecords = { count: 0, classId: "" };
+  const noFamilies = { count: 0, classId: "", className: "" };
   const homerooms = classes.filter((c) => c.isHomeroom);
   if (homerooms.length) {
     const hrIds = homerooms.map((c) => c.id);
@@ -129,6 +130,18 @@ export async function getTeacherToday(ctx: SessionContext) {
       .from(schema.enrollments)
       .innerJoin(schema.students, eq(schema.students.id, schema.enrollments.studentId))
       .where(inArray(schema.enrollments.classId, hrIds));
+    // Famílias que ainda não acompanham: a turma com mais alunos sem responsável conectado
+    if (studs.length) {
+      const linked = await db
+        .selectDistinct({ studentId: schema.guardianLinks.studentId })
+        .from(schema.guardianLinks)
+        .where(and(inArray(schema.guardianLinks.studentId, studs.map((s) => s.id)), isNull(schema.guardianLinks.revokedAt), sql`${schema.guardianLinks.verifiedAt} is not null`));
+      const has = new Set(linked.map((l) => l.studentId));
+      for (const c of homerooms) {
+        const n = studs.filter((s) => s.classId === c.id && !has.has(s.id)).length;
+        if (n > noFamilies.count) Object.assign(noFamilies, { count: n, classId: c.id, className: c.name });
+      }
+    }
     const since = addDays(today, -14);
     const absences = await db
       .select({ studentId: schema.attendance.studentId, n: count() })
@@ -228,5 +241,5 @@ export async function getTeacherToday(ctx: SessionContext) {
   const hidden = new Set(dism.map((d) => d.key));
   const visibleItems = items.filter((i) => !hidden.has(i.id));
 
-  return { classes, term, items: visibleItems, unreadCount: unread.reduce((a, u) => a + u.n, 0), attention: attention.slice(0, 4), noRecords, upcoming: upcoming.slice(0, 6), recent };
+  return { classes, term, items: visibleItems, unreadCount: unread.reduce((a, u) => a + u.n, 0), attention: attention.slice(0, 4), noRecords, noFamilies, upcoming: upcoming.slice(0, 6), recent };
 }

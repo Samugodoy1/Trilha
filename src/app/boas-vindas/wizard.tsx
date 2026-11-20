@@ -28,6 +28,7 @@ import { parseRoster } from "@/components/classes/class-tools";
 import { stageLabels, shiftLabels, type Stage } from "@/lib/vocabulary";
 import { todayISO } from "@/lib/format";
 import { FeatureRow, Group, GroupRow, OnboardingFlow, useCanInstall, type Step } from "./onboarding-ui";
+import { TeamInviteSheet } from "@/components/invites/invite-ui";
 
 const BLUE: [string, string] = ["#4BA3FF", "#0062E0"];
 const ORANGE: [string, string] = ["#FFB340", "#FF8A00"];
@@ -125,6 +126,8 @@ export function Wizard({ firstName, hasSchool: hasSchoolAtStart, schoolName }: {
   const [studentsAdded, setStudentsAdded] = useState(0);
   const [firstNote, setFirstNote] = useState("");
   const [noteSaved, setNoteSaved] = useState(false);
+  const [teamOpen, setTeamOpen] = useState(false);
+  const [invitedCoord, setInvitedCoord] = useState(false);
   const parsed = useMemo(() => parseRoster(roster), [roster]);
 
   const next = () => setCur((k) => stepsRef.current[stepsRef.current.findIndex((x) => x.key === k) + 1]?.key ?? k);
@@ -313,6 +316,22 @@ export function Wizard({ firstName, hasSchool: hasSchoolAtStart, schoolName }: {
         onClick: () => run(async () => { const r = await configureTermsAction({ structure, startsOn, endsOn }); return r.ok ? true : fail(r.error ?? "Confira as datas."); }),
       },
     },
+    ...(!hasSchool
+      ? [
+          {
+            key: "team",
+            icon: Users,
+            tint: INDIGO,
+            title: "Convide a coordenação",
+            description: "Mande um código para a coordenação da sua escola entrar no Trilha. Ela acompanha as turmas, mas só vê o que você compartilhar.",
+            body: (
+              <Summary items={["Seus registros continuam privados", "Você escolhe o que compartilhar, um a um", "Você pode convidar outros professores depois, em Ajustes"]} />
+            ),
+            primary: { label: invitedCoord ? "Continuar" : "Convidar coordenação", onClick: () => (invitedCoord ? next() : setTeamOpen(true)) },
+            secondary: invitedCoord ? undefined : { label: "Agora não", onClick: next },
+          } satisfies Step,
+        ]
+      : []),
     {
       key: "first-note",
       icon: NotebookPen,
@@ -369,7 +388,17 @@ export function Wizard({ firstName, hasSchool: hasSchoolAtStart, schoolName }: {
 
   stepsRef.current = steps;
   const index = Math.max(0, steps.findIndex((x) => x.key === cur));
-  return <OnboardingFlow steps={steps} index={index} onBack={() => setCur(steps[Math.max(0, index - 1)].key)} />;
+  return (
+    <>
+      <OnboardingFlow steps={steps} index={index} onBack={() => setCur(steps[Math.max(0, index - 1)].key)} />
+      <TeamInviteSheet
+        open={teamOpen}
+        defaultRole="coordinator"
+        onClose={() => setTeamOpen(false)}
+        onCreated={() => setInvitedCoord(true)}
+      />
+    </>
+  );
 }
 
 /** Apresentação para a família no primeiro acesso: o que vai ver, como protegemos, e pronto. */

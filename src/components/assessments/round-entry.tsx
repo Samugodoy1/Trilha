@@ -113,7 +113,7 @@ export function RoundEntry({
 
   return (
     <div className="space-y-5">
-      <div className="sticky top-[calc(env(safe-area-inset-top)+44px)] z-20 -mx-5 bg-canvas/90 px-5 py-3 backdrop-blur-xl md:top-14 md:-mx-8 md:px-8">
+      <div className="sticky top-[calc(env(safe-area-inset-top)+50px)] z-20 -mx-5 bg-canvas/90 px-5 py-3 backdrop-blur-xl md:top-14 md:-mx-8 md:px-8">
         <div className="flex items-center justify-between gap-3">
           <p className="flex min-w-0 items-baseline gap-1.5">
             <span className="font-rounded text-title-2 tabular">{done}</span>

@@ -8,7 +8,7 @@ export function MessagesLayout({ list, thread, hasSelection, title, toolbar }: {
   return (
     <div className="md:flex md:h-[calc(100dvh-56px)] lg:h-dvh">
       <aside className={cn("min-w-0 md:w-[340px] md:shrink-0 md:overflow-y-auto md:shadow-[inset_-0.5px_0_0_var(--separator)]", hasSelection && "hidden md:block")}>
-        <div className="px-5 pt-[calc(env(safe-area-inset-top)+12px)] pb-3 md:px-4 md:pt-6">
+        <div className="px-5 pt-[calc(env(safe-area-inset-top)+26px)] pb-3 md:px-4 md:pt-6">
           <div className="flex items-center justify-between gap-3">
             <h1 className="text-large-title">{title}</h1>
             {toolbar}

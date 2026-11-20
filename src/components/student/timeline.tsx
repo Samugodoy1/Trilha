@@ -25,7 +25,7 @@ export function Timeline({ events, showVisibility = true }: { events: TimelineEv
     <div className="space-y-8">
       {groups.map((g) => (
         <section key={g.key} aria-label={g.label}>
-          <h3 className="sticky top-[calc(env(safe-area-inset-top)+44px)] z-10 -mx-1 mb-3 px-1 py-1 font-sans text-headline md:top-14">
+          <h3 className="sticky top-[calc(env(safe-area-inset-top)+50px)] z-10 -mx-1 mb-3 px-1 py-1 font-sans text-headline md:top-14">
             <span className="rounded-full bg-canvas/85 py-1 pr-3 backdrop-blur">{g.label}</span>
           </h3>
           <ol className="relative space-y-3 pl-6 before:absolute before:top-2 before:bottom-2 before:left-[7px] before:w-[2px] before:rounded-full before:bg-separator">

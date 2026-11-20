@@ -6,6 +6,7 @@ import { Trash2 } from "lucide-react";
 import { IconButton } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { deleteEntryAction, restoreEntryAction } from "@/server/actions/journal";
+import { navigateAfterAction } from "@/lib/navigate";
 
 /** Apaga na hora, com "Desfazer" — o padrão de Mail e Notas. */
 export function DeleteEntryButton({ id }: { id: string }) {
@@ -23,7 +24,7 @@ export function DeleteEntryButton({ id }: { id: string }) {
         start(async () => {
           const res = await deleteEntryAction(id);
           if (!res.ok) return toast({ title: "Não foi possível apagar", tone: "error" });
-          router.push("/diario");
+          void navigateAfterAction(router, "/diario");
           toast({
             title: "Registro apagado",
             tone: "info",
@@ -33,7 +34,7 @@ export function DeleteEntryButton({ id }: { id: string }) {
                 const r = await restoreEntryAction(id);
                 if (r.ok) {
                   toast({ title: "Registro restaurado" });
-                  router.push(`/diario/${id}`);
+                  void navigateAfterAction(router, `/diario/${id}`);
                 } else toast({ title: "Não foi mais possível desfazer", tone: "error" });
               },
             },

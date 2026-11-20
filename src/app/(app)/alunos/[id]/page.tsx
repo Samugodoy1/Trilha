@@ -16,6 +16,7 @@ import { StudentActions, StudentTabs } from "@/components/student/student-action
 import { RevokeInviteButton, MarkSeen } from "@/components/student/family-bits";
 import { formatDay, formatMessageStamp, formatScore, isoFromTimestamp } from "@/lib/format";
 import { contributionKinds, conversationCategories, feedbackTones, portfolioKinds } from "@/lib/vocabulary";
+import { ConnectFamilyTag, InviteGuardianRow } from "@/components/invites/invite-ui";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   void params;
@@ -62,7 +63,7 @@ export default async function StudentPage({ params, searchParams }: { params: Pr
                   {p.guardians.length === 1 ? "1 responsável conectado" : `${p.guardians.length} responsáveis conectados`}
                 </Tag>
               ) : (
-                <Tag tone="warning">Família ainda não conectada</Tag>
+                <ConnectFamilyTag studentId={student.id} firstName={first} />
               )}
               {!student.imageConsent && <Tag tone="neutral" icon={Lock}>Sem autorização de imagem</Tag>}
             </div>
@@ -222,7 +223,8 @@ export default async function StudentPage({ params, searchParams }: { params: Pr
                 trailing={isTeacher(ctx) ? <RevokeInviteButton id={i.id} /> : undefined}
               />
             ))}
-            {p.guardians.length === 0 && p.pendingInvites.length === 0 && <ListRow title="Nenhum responsável conectado" subtitle="Use “Convidar responsável” no menu de ações." />}
+            {p.guardians.length === 0 && p.pendingInvites.length === 0 && <ListRow title="Nenhum responsável conectado" subtitle={`Convide a família de ${first} com um código próprio.`} />}
+            {!isFamily(ctx) && <InviteGuardianRow studentId={student.id} firstName={first} />}
           </ListSection>
 
           {p.conversations.length > 0 && (

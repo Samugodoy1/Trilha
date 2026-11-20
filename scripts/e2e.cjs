@@ -42,7 +42,7 @@ async function login(browser, email, viewport = { width: 1280, height: 860 }) {
   const stamp = Date.now().toString().slice(-6);
   const className = `5º ano Z${stamp.slice(-2)}`;
   const kid = `Clara Teste${stamp} Fictícia`;
-  let classId, studentId, inviteCode, guardianEmail = `familia${stamp}@exemplo.test`;
+  let staffCode, classId, studentId, inviteCode, guardianEmail = `familia${stamp}@exemplo.test`;
 
   const { page: t } = await login(browser, "helena@trilha.demo");
   global.__shotPage = t;
@@ -295,6 +295,14 @@ async function login(browser, email, viewport = { width: 1280, height: 860 }) {
     await o.getByRole("button", { name: "Adicionar 2 alunos" }).click();
     await o.getByRole("heading", { name: "Período letivo" }).waitFor();
     await o.getByRole("button", { name: "Continuar" }).click();
+    await o.getByRole("heading", { name: "Convide a coordenação" }).waitFor();
+    await o.getByRole("button", { name: "Convidar coordenação" }).click();
+    await o.getByRole("button", { name: "Gerar convite" }).click();
+    staffCode = (await o.locator("p.font-mono").first().innerText()).trim();
+    expect(/^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(staffCode), `código de equipe inválido: ${staffCode}`);
+    await o.keyboard.press("Escape");
+    await o.waitForTimeout(400);
+    await o.getByRole("button", { name: "Continuar" }).click();
     await o.getByRole("textbox", { name: "Registro", exact: true }).fill("Primeiro dia: a turma desenhou o caminho de casa até a escola.");
     await o.getByRole("button", { name: "Salvar registro" }).click();
     for (let n = 0; n < 2 && !(await o.getByRole("heading", { name: "Tudo pronto, Laura" }).isVisible()); n++) {
@@ -303,6 +311,29 @@ async function login(browser, email, viewport = { width: 1280, height: 860 }) {
     }
     await o.getByText("2 alunos com histórico pronto").waitFor();
     await Promise.all([o.waitForURL(`${BASE}/hoje`), o.getByRole("button", { name: "Começar a usar o Trilha" }).click()]);
+  });
+
+  await step("Coordenação entra pelo convite da professora e vê a turma", async () => {
+    const c = await (await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, locale: "pt-BR", timezoneId: "America/Sao_Paulo" })).newPage();
+    c.setDefaultTimeout(30000);
+    await c.goto(`${BASE}/convite?codigo=${staffCode}`, { waitUntil: "networkidle" });
+    await c.getByRole("button", { name: "Continuar" }).click();
+    await c.getByRole("heading", { name: "Entrar na coordenação" }).waitFor();
+    await c.getByLabel("Seu nome").fill("Teresa Exemplo Coord");
+    await c.getByLabel("E-mail").fill(`coord${stamp}@exemplo.test`);
+    await c.getByLabel("Senha").fill("coordena2026x");
+    await Promise.all([c.waitForURL(`${BASE}/coordenacao`), c.getByRole("button", { name: "Confirmar e entrar" }).click()]);
+    await c.goto(`${BASE}/turmas`, { waitUntil: "networkidle" });
+    await c.getByRole("heading", { name: "3º ano A" }).first().waitFor();
+  });
+
+  await step("Professora convida as famílias da turma de uma vez", async () => {
+    await t.goto(`${BASE}/turmas/${classId}?aba=familias`, { waitUntil: "networkidle" });
+    await t.getByText(/de 3 famílias conectadas/).waitFor();
+    await t.getByRole("button", { name: /Convidar \d famílias?/ }).click();
+    await t.getByRole("heading", { name: "Convites prontos" }).waitFor();
+    const codes = await t.locator("ul p.font-mono").allInnerTexts();
+    expect(codes.length >= 1 && codes.every((x) => /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(x.trim())), `códigos: ${codes}`);
   });
 
   await step("Sem sessão: redireciona para entrar e bloqueia arquivos", async () => {

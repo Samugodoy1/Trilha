@@ -9,6 +9,7 @@ import { useToast } from "@/components/ui/toast";
 import { generateReportAction } from "@/server/actions/reports";
 import { reportKinds, type ReportKind } from "@/lib/vocabulary";
 import { cn } from "@/lib/cn";
+import { navigateAfterAction } from "@/lib/navigate";
 
 export function NewReportForm({
   students,
@@ -96,7 +97,7 @@ export function NewReportForm({
           start(async () => {
             const res = await generateReportAction({ studentId, kind, termId });
             if (!res.ok) return toast({ title: res.error, tone: "error" });
-            router.push(`/relatorios/${res.id}`);
+            void navigateAfterAction(router, `/relatorios/${res.id}`);
           })
         }
       >

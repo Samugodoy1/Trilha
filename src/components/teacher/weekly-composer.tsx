@@ -13,6 +13,7 @@ import { PostCard } from "@/components/family/post-card";
 import { saveWeeklyAction, suggestWeeklyAction, uploadPhotoAction, type WeeklySuggestion } from "@/server/actions/weekly";
 import { addDays, formatDay, formatDayShort, weekStart as weekStartOf, todayISO } from "@/lib/format";
 import { cn } from "@/lib/cn";
+import { navigateAfterAction } from "@/lib/navigate";
 
 const STANDARD = [
   { key: "trabalhamos", title: "O que trabalhamos" },
@@ -95,7 +96,7 @@ export function WeeklyComposer({
       if (!res.ok) return toast({ title: res.error, tone: "error" });
       setId(res.id);
       toast({ title: publish ? "Publicado" : "Rascunho guardado", description: publish ? `${recipients} ${recipients === 1 ? "família vai" : "famílias vão"} ver no Trilha.` : undefined });
-      if (publish) router.push("/semana");
+      if (publish) void navigateAfterAction(router, "/semana");
       else router.refresh();
     });
 

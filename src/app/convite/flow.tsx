@@ -17,6 +17,7 @@ export function InviteFlow({ initialCode }: { initialCode: string }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [pending, start] = useTransition();
+  const staff = preview?.kind === "staff";
 
   if (!preview)
     return (
@@ -34,7 +35,7 @@ export function InviteFlow({ initialCode }: { initialCode: string }) {
       >
         <div className="text-center">
           <h1 className="text-title-1">Convite da escola</h1>
-          <p className="mt-2 text-callout text-label-2">Digite o código que a escola entregou para acompanhar a vida escolar do seu filho ou filha.</p>
+          <p className="mt-2 text-callout text-label-2">Digite o código que você recebeu da escola — para acompanhar seu filho ou filha, ou para entrar na equipe.</p>
         </div>
         <TextField
           label="Código do convite"
@@ -64,17 +65,31 @@ export function InviteFlow({ initialCode }: { initialCode: string }) {
         e.preventDefault();
         setError(null);
         start(async () => {
-          const res = await acceptInviteAction({ code, birthDate: birth, mode, name, email, password });
-          if (res && !res.ok) setError(res.error);
+          const res = await acceptInviteAction({ code, birthDate: staff ? undefined : birth, mode, name, email, password });
+          if (!res.ok) return setError(res.error);
+          window.location.assign(res.href);
+          await new Promise(() => {});
         });
       }}
     >
-      <div className="text-center">
-        <p className="text-subhead font-semibold text-label-2">{preview.school}</p>
-        <h1 className="mt-1 text-title-1">Acompanhar {preview.childFirstName}</h1>
-        <p className="mt-2 text-callout text-label-2">Para sua segurança, confirme a data de nascimento de {preview.childFirstName}.</p>
-      </div>
-      <TextField label={`Data de nascimento de ${preview.childFirstName}`} type="date" value={birth} onChange={(e) => setBirth(e.target.value)} required />
+      {preview.kind === "staff" ? (
+        <div className="text-center">
+          <p className="text-subhead font-semibold text-label-2">{preview.school}</p>
+          <h1 className="mt-1 text-title-1">{preview.role === "teacher" ? "Entrar como professor(a)" : "Entrar na coordenação"}</h1>
+          <p className="mt-2 text-callout text-label-2">
+            {preview.invitedBy} convidou você para a equipe da escola no Trilha. Crie sua conta ou entre com a que você já tem.
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="text-center">
+            <p className="text-subhead font-semibold text-label-2">{preview.school}</p>
+            <h1 className="mt-1 text-title-1">Acompanhar {preview.childFirstName}</h1>
+            <p className="mt-2 text-callout text-label-2">Para sua segurança, confirme a data de nascimento de {preview.childFirstName}.</p>
+          </div>
+          <TextField label={`Data de nascimento de ${preview.childFirstName}`} type="date" value={birth} onChange={(e) => setBirth(e.target.value)} required />
+        </>
+      )}
 
       <SegmentedControl
         label="Conta"
@@ -100,12 +115,14 @@ export function InviteFlow({ initialCode }: { initialCode: string }) {
           {error}
         </p>
       )}
-      <Button type="submit" size="lg" loading={pending} disabled={!birth || !email || !password}>
+      <Button type="submit" size="lg" loading={pending} disabled={(!staff && !birth) || !email || !password}>
         Confirmar e entrar
       </Button>
       <p className="flex items-start gap-2 text-footnote text-label-2">
         <ShieldCheck aria-hidden className="mt-0.5 size-4 shrink-0 text-positive-ink" />
-        Você verá somente as informações de {preview.childFirstName} compartilhadas pela escola. O código vale uma única vez.
+        {preview.kind === "staff"
+          ? "Seus registros começam privados. A coordenação vê apenas o que você compartilhar. O código vale uma única vez."
+          : `Você verá somente as informações de ${preview.childFirstName} compartilhadas pela escola. O código vale uma única vez.`}
       </p>
     </form>
   );

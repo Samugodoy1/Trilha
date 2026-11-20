@@ -507,6 +507,15 @@
     padding: 0 !important;
     max-width: none !important;
   }
+  /* Bilhetes de convite: só a folha de bilhetes vai para a impressora */
+  html.printing-invites body > :not([data-print-area]) {
+    display: none !important;
+  }
+}
+@media screen {
+  [data-print-area] {
+    display: none;
+  }
 }
 
 /* ─────────────────────── Dynamic Type (iPhone e iPad) ───────────────────────

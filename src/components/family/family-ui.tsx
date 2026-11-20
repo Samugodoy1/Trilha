@@ -13,6 +13,7 @@ import { completeTaskAction, uploadFileAction } from "@/server/actions/tasks";
 import { addContributionAction, markAnnouncementsReadAction, markFeedbackReadAction, respondAnnouncementAction } from "@/server/actions/family";
 import { startConversationAction } from "@/server/actions/messages";
 import { contributionKinds, conversationCategories, type ConversationCategory } from "@/lib/vocabulary";
+import { navigateAfterAction } from "@/lib/navigate";
 
 export function TaskCheck({ taskId, studentId, done, title, acceptsSubmissions }: { taskId: string; studentId: string; done: boolean; title: string; acceptsSubmissions: boolean }) {
   const [checked, setChecked] = useState(done);
@@ -250,7 +251,7 @@ export function NewConversationButton({
                 const res = await startConversationAction({ studentId, teacherId, category, subject, body });
                 if (!res.ok) return toast({ title: res.error, tone: "error" });
                 setOpen(false);
-                router.push(`/familia/mensagens/${res.id}`);
+                void navigateAfterAction(router, `/familia/mensagens/${res.id}`);
               })
             }
           >

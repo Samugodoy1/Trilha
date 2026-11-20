@@ -15,6 +15,7 @@ import { addStudentsAction, saveAttendanceAction } from "@/server/actions/classe
 import { createGradeItemAction } from "@/server/actions/grades";
 import { formatRelativeDay, todayISO, formatFullDay } from "@/lib/format";
 import { cn } from "@/lib/cn";
+import { navigateAfterAction } from "@/lib/navigate";
 
 type Student = { id: string; name: string; hue: number; number: number | null; lastEntry: string | null; writing: string | null; reading: string | null; entryCount: number };
 
@@ -343,7 +344,7 @@ export function NewGradeItemButton({
               });
               if (!res.ok) return toast({ title: res.error, tone: "error" });
               setOpen(false);
-              router.push(`/avaliacoes/${res.id}`);
+              void navigateAfterAction(router, `/avaliacoes/${res.id}`);
             })
           }
         >

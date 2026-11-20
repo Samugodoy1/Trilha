@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { ClipboardList, Lock, Plus, Archive } from "lucide-react";
 import { requireRole } from "@/server/session";
 import { isTeacher, isUuid, pageGuard } from "@/server/access";
-import { getClassDetail } from "@/server/queries/classes";
+import { getClassDetail, getClassFamilies } from "@/server/queries/classes";
+import { ClassFamilies } from "@/components/invites/invite-ui";
 import { getCurrentTerm } from "@/server/queries/common";
 import { Page } from "@/components/ui/page";
 import { Button } from "@/components/ui/button";
@@ -25,10 +26,11 @@ export default async function ClassPage({ params, searchParams }: { params: Prom
   const ctx = await requireRole("teacher", "coordinator", "admin");
   const d = await pageGuard(() => getClassDetail(ctx, id));
   const term = await getCurrentTerm(ctx.school.id);
-  const tab = ["alunos", "sondagens", "avaliacoes"].includes(sp.aba ?? "") ? sp.aba! : "alunos";
+  const tab = ["alunos", "familias", "sondagens", "avaliacoes"].includes(sp.aba ?? "") ? sp.aba! : "alunos";
   const archived = Boolean(d.cls.archivedAt);
   const teacherCanEdit = isTeacher(ctx) && !archived;
   const homeroom = d.teachers.find((t) => t.isHomeroom);
+  const families = await getClassFamilies(ctx, id);
 
   // Agrupamentos por bimestre
   const roundsByTerm = new Map<string, typeof d.rounds>();
@@ -75,6 +77,7 @@ export default async function ClassPage({ params, searchParams }: { params: Prom
           value={tab}
           options={[
             { value: "alunos", label: `Alunos · ${d.students.length}` },
+            { value: "familias", label: "Famílias" },
             { value: "sondagens", label: "Sondagens" },
             { value: "avaliacoes", label: "Avaliações" },
           ]}
@@ -86,6 +89,13 @@ export default async function ClassPage({ params, searchParams }: { params: Prom
           <StudentList students={d.students} classId={d.cls.id} termStart={term?.startsOn} initialFilter={sp.filtro} canRecord={teacherCanEdit} />
         ) : (
           <EmptyState icon={Plus} title="Turma sem alunos" message="Adicione os alunos um a um ou cole a lista diretamente da planilha da secretaria." action={teacherCanEdit ? <AddStudentsButton classId={d.cls.id} /> : undefined} />
+        ))}
+
+      {tab === "familias" &&
+        (families.length ? (
+          <ClassFamilies classId={d.cls.id} className={d.cls.name} rows={families} canInvite={!archived} />
+        ) : (
+          <EmptyState icon={Plus} title="Turma sem alunos" message="Adicione os alunos primeiro. Depois, cada família recebe um convite com código próprio." action={teacherCanEdit ? <AddStudentsButton classId={d.cls.id} /> : undefined} />
         ))}
 
       {tab === "sondagens" && (

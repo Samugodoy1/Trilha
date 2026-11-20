@@ -11,6 +11,7 @@ import { levelRamp } from "@/lib/levels";
 import { seriesMeta } from "@/components/student/highlights";
 import { formatDay } from "@/lib/format";
 import { entryKinds } from "@/lib/vocabulary";
+import { TeamInviteButton } from "@/components/invites/invite-ui";
 import { cn } from "@/lib/cn";
 
 export const metadata: Metadata = { title: "Visão geral" };
@@ -25,17 +26,17 @@ export default async function CoordinationPage() {
     { icon: HeartHandshake, label: "Famílias", value: `${pct}%`, tint: "var(--family)" },
   ];
   return (
-    <Page title="Visão geral" titleTint eyebrow={ctx.school.name} subtitle="Para apoiar professores e alunos — não para comparar pessoas." width="wide">
+    <Page title="Visão geral" titleTint eyebrow={ctx.school.name} subtitle="Para apoiar professores e alunos — não para comparar pessoas." width="wide" actions={<TeamInviteButton role="teacher" label="Convidar" />}>
       <div className="grid grid-cols-3 gap-2.5">
         {tiles.map((t) => {
           const zero = t.value === 0 || t.value === "0%";
           return (
           <div key={t.label} className="flex flex-col justify-between gap-2 rounded-[14px] bg-surface-2 p-3 dark:bg-surface">
-            <div className="flex items-start justify-between">
-              <span className="flex size-8 items-center justify-center rounded-full text-white" style={{ background: zero ? "#aeaeb2" : t.tint }}>
+            <div className="flex items-start justify-between gap-1.5">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-full text-white" style={{ background: zero ? "#aeaeb2" : t.tint }}>
                 <t.icon aria-hidden className="size-[17px]" strokeWidth={2.4} />
               </span>
-              <span className={`text-[1.75rem] leading-none font-bold tabular ${zero ? "text-label-3" : ""}`}>{t.value}</span>
+              <span className={`min-w-0 truncate text-[1.5rem] leading-none font-bold tabular ${zero ? "text-label-3" : ""}`}>{t.value}</span>
             </div>
             <span className="text-subhead font-semibold text-label-2">{t.label}</span>
           </div>

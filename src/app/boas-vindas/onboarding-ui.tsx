@@ -82,7 +82,7 @@ export function OnboardingFlow({ steps, index, onBack }: { steps: Step[]; index:
   return (
     <main className="flex min-h-dvh flex-col bg-canvas md:items-center md:justify-center md:bg-surface-2 md:py-10">
       <div className="flex w-full flex-1 flex-col md:max-w-[520px] md:flex-none md:overflow-hidden md:rounded-[28px] md:bg-canvas md:shadow-e3">
-        <div className="sticky top-0 z-10 pt-safe md:static">
+        <div className="sticky top-0 z-10 bg-canvas/85 pt-[calc(env(safe-area-inset-top)+6px)] backdrop-blur-xl md:static md:bg-transparent md:pt-0">
           <div className="flex h-11 items-center px-2 md:h-14 md:px-4">
             {index > 0 && !step.noBack && (
               <button type="button" onClick={onBack} className="press flex h-11 items-center gap-0.5 rounded-full px-2 text-body text-accent outline-none focus-visible:bg-fill">

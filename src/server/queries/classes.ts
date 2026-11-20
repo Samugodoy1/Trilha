@@ -93,3 +93,44 @@ export async function getClassDetail(ctx: SessionContext, classId: string) {
     gradeItems: gradeItems.map(({ g, subject, term, done }) => ({ ...g, subject, termName: term.name, done })),
   };
 }
+
+/** Situação de cada família da turma: conectada, convite aberto ou ainda sem convite. */
+export async function getClassFamilies(ctx: SessionContext, classId: string) {
+  await assertClass(ctx, classId);
+  const db = await getDb();
+  const students = await getClassStudents(classId);
+  const ids = students.map((s) => s.id);
+  if (!ids.length) return [];
+  const [links, invites] = await Promise.all([
+    db
+      .select({ studentId: schema.guardianLinks.studentId, relationship: schema.guardianLinks.relationship, name: schema.users.name })
+      .from(schema.guardianLinks)
+      .innerJoin(schema.users, eq(schema.users.id, schema.guardianLinks.userId))
+      .where(and(inArray(schema.guardianLinks.studentId, ids), sql`${schema.guardianLinks.revokedAt} is null`, sql`${schema.guardianLinks.verifiedAt} is not null`)),
+    db
+      .select({ studentId: schema.invitations.studentId, expiresAt: schema.invitations.expiresAt })
+      .from(schema.invitations)
+      .where(
+        and(
+          inArray(schema.invitations.studentId, ids),
+          sql`${schema.invitations.acceptedAt} is null`,
+          sql`${schema.invitations.revokedAt} is null`,
+          sql`${schema.invitations.expiresAt} > now()`,
+        ),
+      )
+      .orderBy(desc(schema.invitations.expiresAt)),
+  ]);
+  return students.map((s) => {
+    const guardians = links.filter((l) => l.studentId === s.id).map((l) => ({ name: l.name, relationship: l.relationship }));
+    const invite = invites.find((i) => i.studentId === s.id);
+    return {
+      id: s.id,
+      name: displayName(s),
+      hue: s.hue,
+      hasBirthDate: Boolean(s.birthDate),
+      guardians,
+      inviteExpiresAt: invite ? invite.expiresAt.toISOString() : null,
+      status: guardians.length ? ("connected" as const) : invite ? ("invited" as const) : ("none" as const),
+    };
+  });
+}

@@ -7,6 +7,7 @@ import { SegmentedControl, Select, TextField } from "@/components/ui/fields";
 import { useToast } from "@/components/ui/toast";
 import { createClassAction } from "@/server/actions/classes";
 import { stageLabels, shiftLabels, type Stage } from "@/lib/vocabulary";
+import { navigateAfterAction } from "@/lib/navigate";
 
 const grades: Record<Stage, number[]> = {
   infantil: [0],
@@ -38,7 +39,7 @@ export function NewClassForm({ subjects, onCreated }: { subjects: { id: string; 
           if (!res.ok) return toast({ title: res.error, tone: "error" });
           toast({ title: `${name} criada` });
           if (onCreated) onCreated(res.id);
-          else router.push(`/turmas/${res.id}`);
+          else void navigateAfterAction(router, `/turmas/${res.id}`);
         });
       }}
     >

@@ -53,7 +53,7 @@ export function Page({
     <div className={cn("min-h-dvh", className)}>
       <div
         className={cn(
-          "no-print sticky top-0 z-30 pt-safe transition-[background-color,box-shadow,backdrop-filter] duration-200",
+          "no-print sticky top-0 z-30 pt-[calc(env(safe-area-inset-top)+6px)] md:pt-safe transition-[background-color,box-shadow,backdrop-filter] duration-200",
           collapsed || hideLargeTitle ? "material-chrome hairline-b" : "bg-transparent",
           root && !hideLargeTitle && "max-md:-mb-11",
           root && !hideLargeTitle && !collapsed && "max-md:pointer-events-none",
@@ -100,7 +100,7 @@ export function Page({
 
       <main id="conteudo" className={cn("mx-auto px-5 pb-36 md:px-8 lg:pb-16", maxW)}>
         {!hideLargeTitle && (
-          <header className={cn("pt-1 pb-5 md:pt-2", root && "max-md:pt-3")}>
+          <header className={cn("pt-2 pb-5 md:pt-2", root && "max-md:pt-5")}>
             {eyebrow && <div className="mb-0.5 text-footnote font-semibold text-label-2 uppercase tracking-[0.03em]">{eyebrow}</div>}
             <div className="flex items-center justify-between gap-3">
               <h1 className={cn("min-w-0 text-large-title text-balance break-words hyphens-auto", titleTint && "text-accent")}>{title}</h1>

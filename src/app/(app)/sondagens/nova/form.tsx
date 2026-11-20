@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { navigateAfterAction } from "@/lib/navigate";
 import { Button } from "@/components/ui/button";
 import { Select, TextField } from "@/components/ui/fields";
 import { useToast } from "@/components/ui/toast";
@@ -28,7 +29,7 @@ export function NewRoundForm({
   const [templateId, setTemplateId] = useState(defaults.templateId ?? templates[0]?.id ?? "");
   const [termId, setTermId] = useState(defaults.termId ?? terms[0]?.id ?? "");
   const [date, setDate] = useState(todayISO());
-  const [pending, start] = useTransition();
+  const [pending, setPending] = useState(false);
   const toast = useToast();
   const router = useRouter();
   const tpl = templates.find((t) => t.id === templateId);
@@ -91,11 +92,17 @@ export function NewRoundForm({
         loading={pending}
         disabled={!classId || !templateId || !termId}
         onClick={() =>
-          start(async () => {
+          void (async () => {
+            // Fora de useTransition: a navegação iniciada dentro da transição da ação
+            // às vezes nunca era exibida pelo roteador.
+            setPending(true);
             const res = await createRoundAction({ classId, templateId, termId, title, appliedOn: date });
-            if (!res.ok) return toast({ title: res.error, tone: "error" });
-            router.push(`/sondagens/${res.id}`);
-          })
+            if (!res.ok) {
+              setPending(false);
+              return toast({ title: res.error, tone: "error" });
+            }
+            await navigateAfterAction(router, `/sondagens/${res.id}`);
+          })()
         }
       >
         Começar lançamento

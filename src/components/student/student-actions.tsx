@@ -253,7 +253,7 @@ function FeedbackSheet({
   );
 }
 
-function InviteSheet({ open, onClose, studentId, firstName }: { open: boolean; onClose: () => void; studentId: string; firstName: string }) {
+export function InviteSheet({ open, onClose, studentId, firstName }: { open: boolean; onClose: () => void; studentId: string; firstName: string }) {
   const toast = useToast();
   const router = useRouter();
   const [relationship, setRelationship] = useState("Mãe");

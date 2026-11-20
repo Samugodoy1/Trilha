@@ -38,7 +38,8 @@ export async function createRoundAction(input: z.input<typeof roundSchema>): Pro
     .values({ schoolId: ctx.school.id, classId: d.classId, templateId: d.templateId, termId: d.termId, title: d.title, appliedOn: d.appliedOn, createdById: ctx.user.id })
     .returning();
   await audit(ctx, "assessment.round.create", "assessment_round", round.id);
-  revalidatePath("/hoje");
+  // Sem revalidatePath: as páginas são dinâmicas e a revalidação junto com a navegação
+  // do cliente às vezes deixava a transição pendente para sempre.
   // A navegação fica com o cliente (router.push): o redirect de uma ação às vezes
   // se perde no roteador do Next quando há uma pré-busca em andamento.
   return { ok: true as const, id: round.id };

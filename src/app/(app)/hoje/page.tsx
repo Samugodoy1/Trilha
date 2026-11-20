@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BookOpen, ChevronRight, ClipboardList, Ellipsis, HeartHandshake, ListChecks, MessageCircle, PencilLine, UserRound, type LucideIcon } from "lucide-react";
+import { BookOpen, ChevronRight, ClipboardList, Ellipsis, HeartHandshake, ListChecks, MessageCircle, PencilLine, UserPlus, UserRound, type LucideIcon } from "lucide-react";
 import { requireRole } from "@/server/session";
 import { getTeacherToday, type TodayItem } from "@/server/queries/today";
 import { Page } from "@/components/ui/page";
@@ -84,7 +84,7 @@ export default async function TodayPage() {
             <HojeCompose />
           </section>
 
-          {(d.attention.length > 0 || d.noRecords.count > 0) && (
+          {(d.attention.length > 0 || d.noRecords.count > 0 || d.noFamilies.count > 0) && (
             <section id="acompanhar" aria-labelledby="acompanhar-h" className="scroll-mt-20">
               <SectionTitle id="acompanhar-h">Para acompanhar</SectionTitle>
               <ul className="-mx-5 md:mx-0">
@@ -92,7 +92,7 @@ export default async function TodayPage() {
                   <li key={a.studentId}>
                     <Link href={`/alunos/${a.studentId}`} className="flex items-center gap-3.5 pl-4 outline-none hover:bg-fill/40 md:pl-0">
                       <Avatar name={a.name} hue={a.hue} size="md" />
-                      <span className={cn("flex min-w-0 flex-1 items-center gap-2 py-3 pr-4", (i < d.attention.length - 1 || d.noRecords.count > 0) && "shadow-[inset_0_-0.5px_0_var(--separator)]")}>
+                      <span className={cn("flex min-w-0 flex-1 items-center gap-2 py-3 pr-4", (i < d.attention.length - 1 || d.noRecords.count > 0 || d.noFamilies.count > 0) && "shadow-[inset_0_-0.5px_0_var(--separator)]")}>
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-body">{a.name}</span>
                           <span className="block text-subhead text-label-2">{a.reasons.slice(0, 2).join(" · ")}</span>
@@ -108,10 +108,28 @@ export default async function TodayPage() {
                       <span className="flex size-10 items-center justify-center rounded-full bg-fill text-label-2">
                         <Ellipsis aria-hidden className="size-5" />
                       </span>
-                      <span className="flex min-w-0 flex-1 items-center gap-2 py-3 pr-4">
+                      <span className={cn("flex min-w-0 flex-1 items-center gap-2 py-3 pr-4", d.noFamilies.count > 0 && "shadow-[inset_0_-0.5px_0_var(--separator)]")}>
                         <span className="min-w-0 flex-1">
                           <span className="block text-body">{d.noRecords.count} alunos sem registro neste bimestre</span>
                           <span className="block text-subhead text-label-2">Um registro curto já ajuda a contar a história de cada um</span>
+                        </span>
+                        <ChevronRight aria-hidden className="size-[15px] text-label-3/70" strokeWidth={2.6} />
+                      </span>
+                    </Link>
+                  </li>
+                )}
+                {d.noFamilies.count > 0 && (
+                  <li>
+                    <Link href={`/turmas/${d.noFamilies.classId}?aba=familias`} className="flex items-center gap-3.5 pl-4 outline-none hover:bg-fill/40 md:pl-0">
+                      <span className="flex size-10 items-center justify-center rounded-full text-white" style={{ background: "var(--family)" }}>
+                        <UserPlus aria-hidden className="size-5" strokeWidth={2.2} />
+                      </span>
+                      <span className="flex min-w-0 flex-1 items-center gap-2 py-3 pr-4">
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-body">
+                            {d.noFamilies.count === 1 ? "1 família ainda não acompanha" : `${d.noFamilies.count} famílias ainda não acompanham`}
+                          </span>
+                          <span className="block text-subhead text-label-2">{d.noFamilies.className} · convide com um código para cada uma</span>
                         </span>
                         <ChevronRight aria-hidden className="size-[15px] text-label-3/70" strokeWidth={2.6} />
                       </span>
